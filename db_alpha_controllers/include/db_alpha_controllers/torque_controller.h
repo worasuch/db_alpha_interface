@@ -1,5 +1,5 @@
-#ifndef OPEN_MANIPULATOR_POSITION_CONTROLLER_H
-#define OPEN_MANIPULATOR_POSITION_CONTROLLER_H
+#ifndef DB_ALPHA_TORQUE_CONTROLLER_H
+#define DB_ALPHA_TORQUE_CONTROLLER_H
 
 #include <ros/ros.h>
 
@@ -12,19 +12,23 @@
 #include <dynamixel_workbench_msgs/DynamixelCommand.h>
 
 // SYNC_WRITE_HANDLER
-#define SYNC_WRITE_HANDLER_FOR_GOAL_POSITION 0
+#define SYNC_WRITE_HANDLER_FOR_GOAL_CURRENT 0
 
 // SYNC_READ_HANDLER(Only for Protocol 2.0)
 #define SYNC_READ_HANDLER_FOR_PRESENT_POSITION_VELOCITY_CURRENT 0
 
-typedef struct {
+typedef struct 
+{
   std::string item_name;
   int32_t value;
 } ItemValue;
 
-class PositionController {
-  private:
-    // ROS NodeHandle
+
+class TorqueController 
+{
+  	private:
+    
+		// ROS NodeHandle
     	ros::NodeHandle node_handle;
 		ros::NodeHandle priv_node_handle;
 	
@@ -52,16 +56,18 @@ class PositionController {
 		sensor_msgs::JointState goal_state;
 		
 		double read_period;
-   		double write_period;
+    	double write_period;
 		double publish_period;
 	
 	public:
-		PositionController();
-		~PositionController();
+
+		TorqueController();
+		~TorqueController();
 	
 		bool initWorkbench(const std::string port_name, const uint32_t baud_rate);
 		bool getDynamixelsInfo(const std::string yaml_file);
 		bool loadDynamixels();
+		void initMsg();
 		bool initDynamixels();
 		bool initControlItems();
 		bool initSDKHandlers();
@@ -86,4 +92,4 @@ class PositionController {
 
 
 
-#endif //OPEN_MANIPULATOR_POSITION_CONTROLLER_H
+#endif //DB_ALPHA_TORQUE_CONTROLLER_H

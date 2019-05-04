@@ -27,18 +27,53 @@ $ cd ../
 $ catkin_make
 ```
 
+#### Official documentation:
 
-Go to [Official Dynamixel Workbench Manual](http://emanual.robotis.com/docs/en/software/dynamixel/dynamixel_workbench/)
+ - **Install:** Go to [Official Dynamixel Workbench Manual](http://emanual.robotis.com/docs/en/software/dynamixel/dynamixel_workbench/).
+
+
+ - **Online Motor Control Table:** Go to [ROBOTIS e-manual Dynamixel XM430-W350](http://emanual.robotis.com/docs/en/dxl/x/xm430-w350/#indirect-data).
+
+ - **Online Motor Datasheet:** Go to [ROBOTIS XM430-W350 support](http://support.robotis.com/en/product/actuator/dynamixel_x/xm_series/xm430-w350.htm).
+
+## Configuration
+
+ Before starting the driver, you need to configure the setup, including motor IDs, operating mode and return delay time. It is also possible to set up gains and acceleration and velocity profiles from the YAM file profile. See examples of configuration files in _/db\_alpha\_controllers/config/_. 
+
+ ```yaml
+# Example of YAML configuration file
+
+id_1:
+  ID: 11
+  Return_Delay_Time: 0
+  Operating_Mode: 3
+  Position_P_Gain: 400
+  Position_I_Gain: 200
+  Position_D_Gain: 50
+  Profile_Velocity: 200
+  Profile_Acceleration: 50
+```
+
+ #### Operating modes
+
+ - Caption from the XM430-W350 datasheet:
+
+![Table of operating modes](db_alpha_controllers/docs/opmds.png)
 
 ## Running the Position Controller:
 
 To start low level control of the open manipulator run the following command:
 
-```roslaunch open_manipulator_controllers position_controller.launch```
+```sh
+$ roslaunch db_alpha_controllers position_controller.launch
+```
 
-After launching the following node, issue basic position commands to the manipulator through the topic /position_contoller/position_command with the following format:
+After launching the following node, issue basic position commands to the manipulator through the topic `/position_contoller/position_command` with the following format:
 
-```rostopic pub /position_controller/position_command sensor_msgs/JointState "header:
+```sh
+S rostopic pub /position_controller/position_command sensor_msgs/JointState 
+
+"header:
   seq: 0
   stamp: {secs: 0, nsecs: 0}
   frame_id: ''
@@ -49,11 +84,11 @@ effort: [0, 0, 0, 0, 0, 0, 0]"
 ```
 
 Where id_1 is the first joint, sequentially to id_7 which is the gripper.
+
 NOTE: There is a limited safe range of the gripper (id_7) which is between -1.00 and -3.14. Any values outside this range may cause damage to the gripper 
 
 
-Before running any of the above code, the USB latency between the computer and the manipulator must be lowered. Run the following 
-terminal commands to resolve this:
+Before running any of the above code, the **USB latency between the computer and the robot** must be lowered. Run the following terminal commands to resolve this:
 
 
 

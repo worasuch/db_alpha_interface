@@ -1,37 +1,60 @@
-#include "open_manipulator_controllers/torque_controller.h"
+//
+// Edited by CVH on May 2019
+//
 
-TorqueController::TorqueController() : node_handle(""), priv_node_handle("~"), has_joint_state(false) {
+
+#include "db_alpha_controllers/torque_controller.h"
+
+
+// Constructur
+TorqueController::TorqueController() : node_handle(""), priv_node_handle("~"), has_joint_state(false) 
+{
 	read_period = priv_node_handle.param<double>("dxl_read_period", 0.010f);
 	write_period = priv_node_handle.param<double>("dxl_write_period", 0.010f);
 	publish_period = priv_node_handle.param<double>("publish_period", 0.010f);
 	dxl_wb = new DynamixelWorkbench;
 }
 
-TorqueController::~TorqueController() { }
 
-bool TorqueController::initWorkbench(const std::string port_name, const uint32_t baud_rate) {
+// Destructor
+TorqueController::~TorqueController()
+{
+
+}
+
+
+//---------------------------------------------------------------------------------------------------
+
+
+bool TorqueController::initWorkbench(const std::string port_name, const uint32_t baud_rate) 
+{
 	bool result = false;
 	const char* log;
 
 	result = dxl_wb->init(port_name.c_str(), baud_rate, &log);
-	if (result == false) {
+	if (result == false)
+	{
 		ROS_ERROR("%s", log);
 	}
 	return result;
 }
 
-bool TorqueController::getDynamixelsInfo(const std::string yaml_file) {
+
+bool TorqueController::getDynamixelsInfo(const std::string yaml_file)
+{
 	YAML::Node dxl_node;
 	dxl_node = YAML::LoadFile(yaml_file.c_str());
 
 	if (dxl_node == NULL) return false;
 
-	for (YAML::const_iterator it_file = dxl_node.begin(); it_file != dxl_node.end(); it_file++) {
+	for (YAML::const_iterator it_file = dxl_node.begin(); it_file != dxl_node.end(); it_file++)
+	{
 		std::string name = it_file->first.as<std::string>();
 		if (name.size() == 0) continue;
 
 		YAML::Node item = dxl_node[name];
-		for (YAML::const_iterator it_item = item.begin(); it_item != item.end(); it_item++) {
+		for (YAML::const_iterator it_item = item.begin(); it_item != item.end(); it_item++)
+		{
 			std::string item_name = it_item->first.as<std::string>();
 			int32_t value = it_item->second.as<int32_t>();
 
@@ -46,35 +69,79 @@ bool TorqueController::getDynamixelsInfo(const std::string yaml_file) {
 	return true;
 }
 
-bool TorqueController::loadDynamixels() {
+bool TorqueController::loadDynamixels()
+{
 	bool result = false;
 	const char* log;
 
-	for (std::pair<std::string, uint32_t> const& dxl : dynamixel) {
+	for (std::pair<std::string, uint32_t> const& dxl : dynamixel) 
+	{
 		uint16_t model_number = 0;
 		result = dxl_wb->ping((uint8_t)dxl.second, &model_number, &log);
-    	if (result == false) {
+    	if (result == false) 
+		{
 			ROS_ERROR("%s", log);
 			ROS_ERROR("Can't find Dynamixel ID '%d'", dxl.second);
 			return result;
-		} else ROS_INFO("Name : %s, ID : %d, Model Number : %d", dxl.first.c_str(), dxl.second, model_number);
+		}
+		else ROS_INFO("Name : %s, ID : %d, Model Number : %d", dxl.first.c_str(), dxl.second, model_number);
 	}
 	return result;
 }
 
-bool TorqueController::initDynamixels() {
+
+// Initialization message
+void TorqueController::initMsg()
+{
+    printf("--------------------------------------------------------------------------\n");
+    printf("\n"
+           "  ____                              _          _  \n"
+           " |  _ \\ _   _ _ __   __ _ _ __ ___ (_)_  _____| | \n"
+           " | | | | | | | '_ \\ / _` | '_ ` _ \\| \\ \\/ / _ \\ | \n"
+           " | |_| | |_| | | | | (_| | | | | | | |>  <  __/ | \n"
+           " |____/ \\__, |_| |_|\\__,_|_| |_| |_|_/_/\\_\\___|_| \n"
+           "  ____  |___/ ____    ____       _                \n"
+           " |  _ \\ / _ \\/ ___|  |  _ \\ _ __(_)_   _____ _ __ \n"
+           " | |_) | | | \\___ \\  | | | | '__| \\ \\ / / _ \\ '__|\n"
+           " |  _ <| |_| |___) | | |_| | |  | |\\ V /  __/ |   \n"
+           " |_| \\_\\\\___/|____/  |____/|_|  |_| \\_/ \\___|_|   \n"
+           "                                                  \n");
+    printf("--------------------------------------------------------------------------\n");
+    printf("\n");
+	printf("*******         TORQUE CONTROLLER         *******");
+	printf("\n");
+	printf("--------------------------------------------------------------------------\n");
+	printf("\n");
+
+    /*for (int index = 0; index < dxl_cnt_; index++)
+	{
+        printf("MODEL   : %s\n", dxl_wb_->getModelName(dxl_id_[index]));
+        printf("ID      : %d\n", dxl_id_[index]);
+        printf("\n");
+    }
+    printf("--------------------------------------------------------------------------\n");*/
+}
+
+
+bool TorqueController::initDynamixels() 
+{
 	ROS_INFO("Torque Enabled");
 	
 	const char* log;
 
-	for (std::pair<std::string, uint32_t> const& dxl : dynamixel) {
+	for (std::pair<std::string, uint32_t> const& dxl : dynamixel)
+	{
 		dxl_wb->torqueOff((uint8_t)dxl.second);
 
-		for (std::pair<std::string, ItemValue> const& info : dynamixel_info) {
-			if (dxl.first == info.first) {
-				if (info.second.item_name != "ID" && info.second.item_name != "Baud_Rate") {
+		for (std::pair<std::string, ItemValue> const& info : dynamixel_info)
+		{
+			if (dxl.first == info.first)
+			{
+				if (info.second.item_name != "ID" && info.second.item_name != "Baud_Rate")
+				{
 					bool result = dxl_wb->itemWrite((uint8_t)dxl.second, info.second.item_name.c_str(), info.second.value, &log);
-					if (result == false) {
+					if (result == false)
+					{
 						ROS_ERROR("%s", log);
 						ROS_ERROR("Failed to write value[%d] on items[%s] to Dynamixel[Name : %s, ID : %d]", info.second.value, info.second.item_name.c_str(), dxl.first.c_str(), dxl.second);
 						return false;
@@ -87,7 +154,10 @@ bool TorqueController::initDynamixels() {
 	return true;
 }
 
-bool TorqueController::initControlItems() {
+
+// Here is where I need to set up some motors to be controlled by torque and some others by position
+bool TorqueController::initControlItems()
+{
 	bool result = false;
 	const char* log = NULL;
 
@@ -114,12 +184,16 @@ bool TorqueController::initControlItems() {
 	return true;
 }
 
-bool TorqueController::initSDKHandlers() {
+
+// Here there might be changes to do as well
+bool TorqueController::initSDKHandlers()
+{
 	bool result = false;
 	const char* log = NULL;
 	
 	result = dxl_wb->addSyncWriteHandler(control_items["Goal_Current"]->address, control_items["Goal_Current"]->data_length, &log);
-	if (result == false) {
+	if (result == false)
+	{
 		ROS_ERROR("%s", log);
 		return result;
 	} else ROS_INFO("%s", log);
@@ -130,32 +204,40 @@ bool TorqueController::initSDKHandlers() {
 						   control_items["Present_Current"]->data_length;
 
     result = dxl_wb->addSyncReadHandler(start_address, read_length, &log);
-    if (result == false) {
+    if (result == false)
+	{
 		ROS_ERROR("%s", log);
 		return result;
 	}
 	return result;
 }
 
-void TorqueController::initPublisher() {
+void TorqueController::initPublisher()
+{
 	dynamixel_state_list_pub = priv_node_handle.advertise<dynamixel_workbench_msgs::DynamixelStateList>("dynamixel_state", 100);
 	joint_states_pub = priv_node_handle.advertise<sensor_msgs::JointState>("joint_states", 100);
 }
 
-void TorqueController::initSubscriber() {
+void TorqueController::initSubscriber()
+{
 	goal_joint_state_sub = priv_node_handle.subscribe("current_command", 100, &TorqueController::onJointStateGoal, this);
 }
 
-void TorqueController::initServer() {
+void TorqueController::initServer()
+{
 	dynamixel_command_server = priv_node_handle.advertiseService("dynamixel_command", &TorqueController::dynamixelCommandMsgCallback, this);
 }
 
-void TorqueController::onJointStateGoal(const sensor_msgs::JointState& msg) {
+void TorqueController::onJointStateGoal(const sensor_msgs::JointState& msg)
+{
 	goal_state = msg;
 	has_joint_state = true;
 }
 
-void TorqueController::readCallback(const ros::TimerEvent&) {
+
+// This callback reads data from the motors?
+void TorqueController::readCallback(const ros::TimerEvent&)
+{
 	bool result = false;
 	const char* log = NULL;
 
@@ -169,7 +251,8 @@ void TorqueController::readCallback(const ros::TimerEvent&) {
 	uint8_t id_array[dynamixel.size()];
 	uint8_t id_cnt = 0;
 
-	for (std::pair<std::string, uint32_t> const& dxl : dynamixel) {
+	for (std::pair<std::string, uint32_t> const& dxl : dynamixel)
+	{
 		dynamixel_state[id_cnt].name = dxl.first;
 		dynamixel_state[id_cnt].id = (uint8_t)dxl.second;
 
@@ -177,7 +260,8 @@ void TorqueController::readCallback(const ros::TimerEvent&) {
 	}
 	
 	result = dxl_wb->syncRead(SYNC_READ_HANDLER_FOR_PRESENT_POSITION_VELOCITY_CURRENT, id_array, dynamixel.size(), &log);
-    if (result == false) {
+    if (result == false)
+	{
 		ROS_ERROR("%s", log);
 	}
 
@@ -186,7 +270,8 @@ void TorqueController::readCallback(const ros::TimerEvent&) {
                                       control_items["Present_Current"]->data_length,
                                       get_current,
                                       &log);
-	if (result == false) {
+	if (result == false)
+	{
 		ROS_ERROR("%s", log);
 	}
 
@@ -195,7 +280,8 @@ void TorqueController::readCallback(const ros::TimerEvent&) {
 									  control_items["Present_Velocity"]->data_length,
 								      get_velocity,
 									  &log);
-	if (result == false) {
+	if (result == false)
+	{
 		ROS_ERROR("%s", log);
 	}
 
@@ -204,11 +290,13 @@ void TorqueController::readCallback(const ros::TimerEvent&) {
                                       control_items["Present_Position"]->data_length,
                                       get_position,
                                       &log);
-	if (result == false) {
+	if (result == false)
+	{
 		ROS_ERROR("%s", log);
 	}
 
-	for(uint8_t index = 0; index < id_cnt; index++) {
+	for(uint8_t index = 0; index < id_cnt; index++)
+	{
 		dynamixel_state[index].present_current = get_current[index];
 		dynamixel_state[index].present_velocity = get_velocity[index];
         dynamixel_state[index].present_position = get_position[index];
@@ -217,7 +305,11 @@ void TorqueController::readCallback(const ros::TimerEvent&) {
 	}	
 }
 
-void TorqueController::writeCallback(const ros::TimerEvent& t) {
+
+// This is the callback that sets the motor to the position/torque
+// Here I need a condition to check motor ID and assign radians or Nm (2.69 mA)
+void TorqueController::writeCallback(const ros::TimerEvent& t)
+{
 	if (has_joint_state == false) return;
 	
 	bool result = false;
@@ -228,21 +320,25 @@ void TorqueController::writeCallback(const ros::TimerEvent& t) {
 
 	int32_t dynamixel_current[dynamixel.size()];
 
-	for (std::string name : goal_state.name) {
+	for (std::string name : goal_state.name)
+	{
 		id_array[id_cnt] = (uint8_t) dynamixel[name];
 		id_cnt++;
 	}
 	
-	for (uint8_t index = 0; index < id_cnt; index++) 
+	for (uint8_t index = 0; index < id_cnt; index++)
+	{ 
 		dynamixel_current[index] = dxl_wb->convertCurrent2Value(goal_state.effort[index]);
-	
+	}
+
 	result = dxl_wb->syncWrite(SYNC_WRITE_HANDLER_FOR_GOAL_CURRENT, id_array, id_cnt, dynamixel_current, 1, &log);
 	if (result == false) ROS_ERROR("%s", log);
 	
 	has_joint_state = false;
 }
 
-void TorqueController::publishCallback(const ros::TimerEvent&) {
+void TorqueController::publishCallback(const ros::TimerEvent&)
+{
 	dynamixel_state_list_pub.publish(dynamixel_state_list);
 	
 	joint_state_msg.header.stamp = ros::Time::now();
@@ -254,7 +350,8 @@ void TorqueController::publishCallback(const ros::TimerEvent&) {
 
     uint8_t id_cnt = 0;
 	
-	for (std::pair<std::string, uint32_t> const& dxl : dynamixel) {
+	for (std::pair<std::string, uint32_t> const& dxl : dynamixel)
+	{
 		double position = 0.0;
 		double velocity = 0.0;
 		double effort = 0.0;
@@ -274,7 +371,9 @@ void TorqueController::publishCallback(const ros::TimerEvent&) {
 	joint_states_pub.publish(joint_state_msg);
 }
 
-bool TorqueController::dynamixelCommandMsgCallback(dynamixel_workbench_msgs::DynamixelCommand::Request &req, dynamixel_workbench_msgs::DynamixelCommand::Response &res) {
+// This one handles the ROS service
+bool TorqueController::dynamixelCommandMsgCallback(dynamixel_workbench_msgs::DynamixelCommand::Request &req, dynamixel_workbench_msgs::DynamixelCommand::Response &res)
+{
 	bool result = false;
 	const char* log;
 
@@ -293,17 +392,25 @@ bool TorqueController::dynamixelCommandMsgCallback(dynamixel_workbench_msgs::Dyn
 	return true;
 }
 
-int main(int argc, char** argv){
-	ros::init(argc, argv, "torque_controller");
+
+//*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
+
+
+int main(int argc, char** argv)
+{
+	ros::init(argc, argv, "dynamixel_ROS_driver_torque_controller");
 	ros::NodeHandle node_handle("");
 	
 	std::string port_name = "/dev/ttyUSB0";
 	uint32_t baud_rate = 57600;
 
-	if (argc < 2) {
+	if (argc < 2) 
+	{
 		ROS_ERROR("Please set '-port_name' and  '-baud_rate' arguments for connected Dynamixels");
 		return 0;
-	} else {
+	}
+	else
+	{
 		port_name = argv[1];
 	    baud_rate = atoi(argv[2]);
 	}
@@ -315,37 +422,45 @@ int main(int argc, char** argv){
 	std::string yaml_file = node_handle.param<std::string>("dynamixel_info", "");
 
 	result = torque_controller.initWorkbench(port_name, baud_rate);
-	if (result == false) {
+	if (result == false)
+	{
 		ROS_ERROR("Please check USB port name");
 		return 0;
 	}
 
+	torque_controller.initMsg();
+
 	result = torque_controller.getDynamixelsInfo(yaml_file);
-	if (result == false) {
+	if (result == false)
+	{
  	   ROS_ERROR("Please check YAML file");
  	   return 0;
 	}
 
 	result = torque_controller.loadDynamixels();
-	if (result == false) {
+	if (result == false)
+	{
 		ROS_ERROR("Please check Dynamixel ID or BaudRate");
 		return 0;
 	}
 
 	result = torque_controller.initDynamixels();
-	if (result == false) {
+	if (result == false)
+	{
 		ROS_ERROR("Please check control table (http://emanual.robotis.com/#control-table)");
 		return 0;
 	}
 
 	result = torque_controller.initControlItems();
-	if (result == false) {
+	if (result == false)
+	{
 		ROS_ERROR("Please check control items");
 		return 0;
 	}
 
 	result = torque_controller.initSDKHandlers();
-	if (result == false) {
+	if (result == false)
+	{
 		ROS_ERROR("Failed to set Dynamixel SDK Handler");
 		return 0;
 	}
