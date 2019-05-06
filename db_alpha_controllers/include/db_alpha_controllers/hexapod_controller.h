@@ -1,5 +1,12 @@
-#ifndef DB_ALPHA_POSITION_CONTROLLER_H
-#define DB_ALPHA_POSITION_CONTROLLER_H
+//
+// Created by Carlos Viescas Huerta on May 2019
+//
+
+/* ROS DYNAMIXEL DRIVER FOR COMBINED TORQUE & POSITION CONTROL */
+         /* Articulated dung beetle hexapod robot  */
+
+#ifndef DB_ALPHA_HEXAPOD_CONTROLLER_H
+#define DB_ALPHA_HEXAPOD_CONTROLLER_H
 
 #include <ros/ros.h>
 
@@ -13,9 +20,11 @@
 
 // SYNC_WRITE_HANDLER
 #define SYNC_WRITE_HANDLER_FOR_GOAL_POSITION 0
+#define SYNC_WRITE_HANDLER_FOR_GOAL_CURRENT 1
 
 // SYNC_READ_HANDLER(Only for Protocol 2.0)
 #define SYNC_READ_HANDLER_FOR_PRESENT_POSITION_VELOCITY_CURRENT 0
+
 
 typedef struct 
 {
@@ -23,12 +32,11 @@ typedef struct
   int32_t value;
 } ItemValue;
 
-
-class PositionController
+class HexapodController
 {
-  	private:
-    	
-		// ROS NodeHandle
+    private:
+
+        // ROS NodeHandle
     	ros::NodeHandle node_handle;
 		ros::NodeHandle priv_node_handle;
 	
@@ -56,22 +64,21 @@ class PositionController
 		sensor_msgs::JointState goal_state;
 		
 		double read_period;
-   		double write_period;
+    	double write_period;
 		double publish_period;
-	
-	public:
-		
-		// Constructor
-		PositionController();
-		
-		// Destructor
-		~PositionController();
-	
-		// Initialization 
-		bool initWorkbench(const std::string port_name, const uint32_t baud_rate);
+
+    public:
+
+        // Constructor
+        HexapodController();
+        
+        // Destructor
+        ~HexapodController();
+
+        // Initialization
+        bool initWorkbench(const std::string port_name, const uint32_t baud_rate);
 		bool getDynamixelsInfo(const std::string yaml_file);
 		bool loadDynamixels();
-		//bool scanDynamixels();
 		void initMsg();
 		bool initDynamixels();
 		bool initControlItems();
@@ -86,15 +93,15 @@ class PositionController
 	
 		void initServer();
 	
+        // ROS Topic Callbacks
 		void readCallback(const ros::TimerEvent&);
 		void writeCallback(const ros::TimerEvent&);
 		void publishCallback(const ros::TimerEvent&);
 	
 		void onJointStateGoal(const sensor_msgs::JointState& msg);
 	
+        // ROS Service Callback
 		bool dynamixelCommandMsgCallback(dynamixel_workbench_msgs::DynamixelCommand::Request &req, dynamixel_workbench_msgs::DynamixelCommand::Response &res);
 };
 
-
-
-#endif //DB_ALPHA_POSITION_CONTROLLER_H
+#endif //DB_ALPHA_HEXAPOD_CONTROLLER_H

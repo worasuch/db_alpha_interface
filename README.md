@@ -8,6 +8,7 @@ Install Main packages:
 
 ```sh
 $ cd catkin_ws/src
+$ git clone https://github.com/CVH95/db_alpha_interface.git
 $ git clone https://github.com/ROBOTIS-GIT/dynamixel-workbench.git
 $ git clone https://github.com/ROBOTIS-GIT/dynamixel-workbench-msgs.git
 ``` 
@@ -59,6 +60,22 @@ id_1:
  - Caption from the XM430-W350 datasheet:
 
 ![Table of operating modes](db_alpha_controllers/docs/opmds.png)
+
+## Torque control: torque-current linear relationship:
+
+```c
+// Current unit A || Torque unit N*m
+float m = 0.5828571429;
+float n = 0.072;
+float current_A = torque_Nm*m + n;
+
+// Dynamixel current unit mA (This is the value to send to the ROS driver)
+float dxl_current = current_A*1000;
+
+// Dynamixel converts current values in mA to motor values with the following relationship:
+float CURRENT_UNIT = 2.69;
+int16_t value = dxl_current / CURRENT_UNIT;
+```
 
 ## Running the Position Controller:
 

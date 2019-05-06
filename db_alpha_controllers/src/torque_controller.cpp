@@ -382,7 +382,8 @@ bool TorqueController::dynamixelCommandMsgCallback(dynamixel_workbench_msgs::Dyn
 	int32_t value = req.value;
 
 	result = dxl_wb->itemWrite(id, item_name.c_str(), value, &log);
-	if (result == false) {
+	if (result == false) 
+	{
 		ROS_ERROR("%s", log);
 		ROS_ERROR("Failed to write value[%d] on items[%s] to Dynamixel[ID : %d]", value, item_name.c_str(), id);
 	}
