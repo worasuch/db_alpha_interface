@@ -19,6 +19,7 @@ find_package(catkin REQUIRED COMPONENTS
 
 # Resolve system dependency on yaml-cpp, which apparently does not
 # provide a CMake find_package() module.
+find_package(Eigen3 REQUIRED)
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(YAML_CPP REQUIRED yaml-cpp)
 find_path(YAML_CPP_INCLUDE_DIR
@@ -53,7 +54,7 @@ endif(NOT ${YAML_CPP_VERSION} VERSION_LESS "0.5")
 catkin_package(
   INCLUDE_DIRS include
   CATKIN_DEPENDS roscpp sensor_msgs geometry_msgs dynamixel_workbench_msgs trajectory_msgs dynamixel_workbench_toolbox cmake_modules
-#  DEPENDS EIGEN3
+  DEPENDS EIGEN3
 #  LIBRARIES open_manipulator_controllers
 #  CATKIN_DEPENDS other_catkin_pkg
 #  DEPENDS system_lib
@@ -87,6 +88,9 @@ target_link_libraries(hexapod_controller ${catkin_LIBRARIES} ${Eigen3_LIBRARIES}
 #############
 ## Install ##
 #############
+install(TARGETS torque_controller position_controller hexapod_controller
+  RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
 
 install(DIRECTORY include/${PROJECT_NAME}/
   DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}

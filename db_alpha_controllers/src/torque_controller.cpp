@@ -215,7 +215,7 @@ bool TorqueController::initSDKHandlers()
 void TorqueController::initPublisher()
 {
 	dynamixel_state_list_pub = priv_node_handle.advertise<dynamixel_workbench_msgs::DynamixelStateList>("dynamixel_state", 100);
-	joint_states_pub = priv_node_handle.advertise<sensor_msgs::JointState>("joint_states", 100);
+	joint_states_pub = priv_node_handle.advertise<sensor_msgs::JointState>("hexapod_states", 100);
 }
 
 void TorqueController::initSubscriber()

@@ -87,6 +87,7 @@ bool HexapodController::loadDynamixels()
 			return result;
 		}
 		else ROS_INFO("Name : %s, ID : %d, Model Number : %d", dxl.first.c_str(), dxl.second, model_number);
+		joint_identification.push_back((uint8_t)dxl.second);
 	}
 	return result;
 }
@@ -161,18 +162,11 @@ bool HexapodController::initControlItems()
 
 	uint32_t dxl_num = dynamixel.begin()->second;
 
-    // Set TF and Body joints to position control // CF and FT joints to torque control
-    // It is possible that this conditional is not needed, and all motors can be initialized with both goal_position and goal_current.
-    if(dxl_num == 11 || dxl_num == 21 || dxl_num == 31 || dxl_num == 41 || dxl_num == 51 || dxl_num == 61 || dxl_num == 71 || dxl_num == 72 || dxl_num == 73 )
-	{
-        goal_position = dxl_wb->getItemInfo(dxl_num, "Goal_Position");
-        if (goal_position == NULL) return false;
-    }
-    else
-    {
-        goal_current = dxl_wb->getItemInfo(dxl_num, "Goal_Current");
-        if (goal_current == NULL) return false;
-    }  
+    goal_position = dxl_wb->getItemInfo(dxl_num, "Goal_Position");
+    if (goal_position == NULL) return false;
+   
+    goal_current = dxl_wb->getItemInfo(dxl_num, "Goal_Current");
+    if (goal_current == NULL) return false; 
 
 	const ControlItem* present_position = dxl_wb->getItemInfo(dxl_num, "Present_Position");
 	if (present_position == NULL) return false;
@@ -237,13 +231,15 @@ bool HexapodController::initSDKHandlers()
 void HexapodController::initPublisher()
 {
 	dynamixel_state_list_pub = priv_node_handle.advertise<dynamixel_workbench_msgs::DynamixelStateList>("dynamixel_state", 100);
-	joint_states_pub = priv_node_handle.advertise<sensor_msgs::JointState>("joint_states", 100);
+	joint_states_pub = priv_node_handle.advertise<sensor_msgs::JointState>("hexapod_states", 100);
+	joint_IDs_pub = priv_node_handle.advertise<std_msgs::Int32MultiArray>("hexapod_joint_IDs", 100);
 }
 
 
 void HexapodController::initSubscriber()
 {
 	goal_joint_state_sub = priv_node_handle.subscribe("hexapod_command", 100, &HexapodController::onJointStateGoal, this);
+	//multi_joint_goal_sub = priv_node_handle.subscribe("multi_joint_command", 100, &HexapodController::multiJointGoal, this);
 }
 
 void HexapodController::initServer()
@@ -256,6 +252,11 @@ void HexapodController::onJointStateGoal(const sensor_msgs::JointState& msg)
 {
 	goal_state = msg;
 	has_joint_state = true;
+}
+
+void HexapodController::multiJointGoal(const std_msgs::Float32MultiArray& msg)
+{
+	joint_configuration = msg.data;
 }
 
 
@@ -346,11 +347,14 @@ void HexapodController::writeCallback(const ros::TimerEvent& t)
     int total_joints = 21;
     int tau_joints = 12;
     int pos_joints = total_joints - tau_joints;
-    uint8_t id_current_count = 0;
+    
+	uint8_t id_current_count = 0;
     uint8_t id_pos_count = 0;
+	
 	uint8_t id_current_array[tau_joints];  
     uint8_t id_pos_array[pos_joints];
-    int32_t dynamixel_current[tau_joints];
+    
+	int32_t dynamixel_current[tau_joints];
     int32_t dynamixel_position[pos_joints];
 
 	for (std::string name : goal_state.name)
@@ -385,11 +389,71 @@ void HexapodController::writeCallback(const ros::TimerEvent& t)
 }
 
 
+// Multi joint motor values
+void HexapodController::writeMultiCallback(const ros::TimerEvent&)
+{
+	bool result = false;
+	const char* log = NULL;
+
+	// Split into position and torque control
+    int total_joints = 21;
+    int tau_joints = 12;
+    int pos_joints = total_joints - tau_joints;
+    
+	uint8_t id_current_count = 0; // counter
+    uint8_t id_pos_count = 0; // counter
+	
+	uint8_t id_current_array[tau_joints]; // motor_id_storage  
+    uint8_t id_pos_array[pos_joints]; // motor_id_storage
+    
+	int32_t dynamixel_current[tau_joints]; // motor_value_storage
+    int32_t dynamixel_position[pos_joints]; // motor_value_storage
+	
+	// Get control values
+	for(int index=0; index<joint_configuration.size(); index+=2)
+	{
+		int motor_id = (int) joint_configuration[index];
+		if(motor_id == 11 || motor_id == 21 || motor_id == 31 || motor_id == 41 || motor_id == 51 || motor_id == 61 || motor_id == 71 || motor_id == 72 || motor_id == 73)
+		{
+			dynamixel_position[id_pos_count] = dxl_wb->convertRadian2Value(motor_id, joint_configuration[index+1]);
+			id_pos_array[id_pos_count] = motor_id;
+			id_pos_count++;
+		}
+		else
+		{
+			dynamixel_current[id_current_count] = dxl_wb->convertCurrent2Value(joint_configuration[index+1]);
+            id_current_array[id_current_count] = motor_id;
+            id_current_count++;
+		}	
+	}
+	
+	result = dxl_wb->syncWrite(SYNC_WRITE_HANDLER_FOR_GOAL_CURRENT, id_current_array, id_current_count, dynamixel_current, 1, &log);
+	if (result == false) ROS_ERROR("FAILED TO SET MOTOR TORQUES");
+
+    result = dxl_wb->syncWrite(SYNC_WRITE_HANDLER_FOR_GOAL_POSITION, id_pos_array, id_pos_count, dynamixel_position, 1, &log);
+	if (result == false) ROS_ERROR("FAILED TO SET MOTOR POSITIONS");
+
+}
+
+
 // This callback publishes feedback into the ROS network
 void HexapodController::publishCallback(const ros::TimerEvent&)
 {
+	// Publish dynamixale state list
 	dynamixel_state_list_pub.publish(dynamixel_state_list);
 	
+	// Publish hexapod joint IDs
+	std_msgs::Int32MultiArray array_IDs;
+	array_IDs.data.clear();
+	
+	for (size_t i=0; i<joint_identification.size(); i++)
+	{
+		array_IDs.data.push_back(joint_identification[i]);
+	}
+
+	joint_IDs_pub.publish(array_IDs);
+
+	// Publish hexapod joint states 
 	joint_state_msg.header.stamp = ros::Time::now();
 
     joint_state_msg.name.clear();
@@ -522,6 +586,7 @@ int main(int argc, char** argv)
 	
 	ros::Timer read_timer = node_handle.createTimer(ros::Duration(hexapod_controller.getReadPeriod()), &HexapodController::readCallback, &hexapod_controller);
 	ros::Timer write_timer = node_handle.createTimer(ros::Duration(hexapod_controller.getWritePeriod()), &HexapodController::writeCallback, &hexapod_controller);
+	//ros::Timer write_timer = node_handle.createTimer(ros::Duration(hexapod_controller.getWritePeriod()), &HexapodController::writeMultiCallback, &hexapod_controller);
 	ros::Timer publish_timer = node_handle.createTimer(ros::Duration(hexapod_controller.getPublishPeriod()), &HexapodController::publishCallback, &hexapod_controller);
 
 	ros::spin();

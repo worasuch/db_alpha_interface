@@ -1,147 +1,147 @@
 # You can find control table of Dynamixel on emanual (http://emanual.robotis.com/#control-table)
 # Control table item has to be set Camel_Case and not included whitespace
 # You are supposed to set at least Dynamixel ID
-id_1:
+id_101:
   ID: 11
   Return_Delay_Time: 0
   Operating_Mode: 5
   Profile_Velocity: 200
   Profile_Acceleration: 50
   
-id_2:
+id_102:
   ID: 12
   Return_Delay_Time: 0
   Operating_Mode: 5
 #  Profile_Velocity: 200
 #  Profile_Acceleration: 50
 
-id_3:
+id_103:
   ID: 13
   Return_Delay_Time: 0
   Operating_Mode: 5
 #  Profile_Velocity: 200
 #  Profile_Acceleration: 50
 
-id_4:
+id_104:
   ID: 21
   Return_Delay_Time: 0
   Operating_Mode: 5
   Profile_Velocity: 200
   Profile_Acceleration: 50
 
-id_5:
+id_105:
   ID: 22
   Return_Delay_Time: 0
   Operating_Mode: 5
 #  Profile_Velocity: 200
 #  Profile_Acceleration: 50
 
-id_6:
+id_106:
   ID: 23
   Return_Delay_Time: 0
   Operating_Mode: 5
 #  Profile_Velocity: 200
 #  Profile_Acceleration: 50
 
-id_7:
+id_107:
   ID: 31
   Return_Delay_Time: 0
   Operating_Mode: 5
   Profile_Velocity: 200
   Profile_Acceleration: 50
 
-id_8:
+id_108:
   ID: 32
   Return_Delay_Time: 0
   Operating_Mode: 5
 #  Profile_Velocity: 200
 #  Profile_Acceleration: 50
 
-id_9:
+id_109:
   ID: 33
   Return_Delay_Time: 0
   Operating_Mode: 5
 #  Profile_Velocity: 200
 #  Profile_Acceleration: 50
 
-id_10:
+id_110:
   ID: 41
   Return_Delay_Time: 0
   Operating_Mode: 5
   Profile_Velocity: 200
   Profile_Acceleration: 50
 
-id_11:
+id_111:
   ID: 42
   Return_Delay_Time: 0
   Operating_Mode: 5
 #  Profile_Velocity: 200
 #  Profile_Acceleration: 50
 
-id_12:
+id_112:
   ID: 43
   Return_Delay_Time: 0
   Operating_Mode: 5
 #  Profile_Velocity: 200
 #  Profile_Acceleration: 50
 
-id_13:
+id_113:
   ID: 51
   Return_Delay_Time: 0
   Operating_Mode: 5
   Profile_Velocity: 200
   Profile_Acceleration: 50
 
-id_14:
+id_114:
   ID: 52
   Return_Delay_Time: 0
   Operating_Mode: 5
 #  Profile_Velocity: 200
 #  Profile_Acceleration: 50
 
-id_15:
+id_115:
   ID: 53
   Return_Delay_Time: 0
   Operating_Mode: 5
 #  Profile_Velocity: 200
 #  Profile_Acceleration: 50
 
-id_16:
+id_116:
   ID: 61
   Return_Delay_Time: 0
   Operating_Mode: 5
   Profile_Velocity: 200
   Profile_Acceleration: 50
 
-id_17:
+id_117:
   ID: 62
   Return_Delay_Time: 0
   Operating_Mode: 5
 #  Profile_Velocity: 200
 #  Profile_Acceleration: 50
 
-id_18:
+id_118:
   ID: 63
   Return_Delay_Time: 0
   Operating_Mode: 5
 #  Profile_Velocity: 200
 #  Profile_Acceleration: 50
 
-id_19:
+id_119:
   ID: 71
   Return_Delay_Time: 0
   Operating_Mode: 5
   Profile_Velocity: 200
   Profile_Acceleration: 50
 
-id_20:
+id_120:
   ID: 72
   Return_Delay_Time: 0
   Operating_Mode: 5
   Profile_Velocity: 200
   Profile_Acceleration: 50
 
-id_21:
+id_121:
   ID: 73
   Return_Delay_Time: 0
   Operating_Mode: 5

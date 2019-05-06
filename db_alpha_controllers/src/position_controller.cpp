@@ -86,29 +86,12 @@ bool PositionController::loadDynamixels()
 		else 
 		{
 			ROS_INFO("Name : %s, ID : %d, Model Number : %d", dxl.first.c_str(), dxl.second, model_number);
+			joint_identification.push_back((uint8_t)dxl.second);
 		}
 	}
 	return result;
 }
 
-
-// Scan function
-/*bool PositionController::scanDynamixels(uint8_t dxlID, uint8_t dxlCNT, uint8_t scan_range)
-{
-	bool result = false;
-	const char* log;
-
-	if (!dxl_wb_->scan(dxl_id_, &dxl_cnt_, scan_range))
-	{
-        ROS_ERROR("Not found Motors, Please check scan range or baud rate");
-        ros::shutdown();
-        return false;
-	}
-
-	initMsg();
-
-	return true;
-}*/
 
 // Initialization message
 void PositionController::initMsg()
@@ -132,14 +115,6 @@ void PositionController::initMsg()
 	printf("\n");
 	printf("--------------------------------------------------------------------------\n");
 	printf("\n");
-
-    /*for (int index = 0; index < dxl_cnt_; index++)
-	{
-        printf("MODEL   : %s\n", dxl_wb_->getModelName(dxl_id_[index]));
-        printf("ID      : %d\n", dxl_id_[index]);
-        printf("\n");
-    }
-    printf("--------------------------------------------------------------------------\n");*/
 }
 
 
@@ -231,18 +206,22 @@ bool PositionController::initSDKHandlers()
 void PositionController::initPublisher()
 {
 	dynamixel_state_list_pub = priv_node_handle.advertise<dynamixel_workbench_msgs::DynamixelStateList>("dynamixel_state", 100);
-	joint_states_pub = priv_node_handle.advertise<sensor_msgs::JointState>("joint_states", 100);
+	joint_states_pub = priv_node_handle.advertise<sensor_msgs::JointState>("hexapod_states", 100);
+	joint_IDs_pub = priv_node_handle.advertise<std_msgs::Int32MultiArray>("hexapod_joint_IDs", 100);
 }
 
 void PositionController::initSubscriber() 
 {
 	goal_joint_state_sub = priv_node_handle.subscribe("position_command", 100, &PositionController::onJointStateGoal, this);
+	//multi_joint_goal_sub = priv_node_handle.subscribe("multi_joint_command", 100, &PositionController::multiJointGoal, this);
 }
+
 
 void PositionController::initServer()
 {
 	dynamixel_command_server = priv_node_handle.advertiseService("dynamixel_command", &PositionController::dynamixelCommandMsgCallback, this);
 }
+
 
 void PositionController::onJointStateGoal(const sensor_msgs::JointState& msg)
 {
@@ -250,6 +229,15 @@ void PositionController::onJointStateGoal(const sensor_msgs::JointState& msg)
 	has_joint_state = true;
 }
 
+
+// Multi joint msg callback
+void PositionController::multiJointGoal(const std_msgs::Float32MultiArray& msg)
+{
+	joint_configuration = msg.data;
+}
+
+
+// Reading motor feedback
 void PositionController::readCallback(const ros::TimerEvent&)
 {
 	bool result = false;
@@ -319,6 +307,8 @@ void PositionController::readCallback(const ros::TimerEvent&)
 	}	
 }
 
+
+// Write motor values
 void PositionController::writeCallback(const ros::TimerEvent& t)
 {
 	if (has_joint_state == false) return;
@@ -346,10 +336,50 @@ void PositionController::writeCallback(const ros::TimerEvent& t)
 	has_joint_state = false;
 }
 
+
+// Multi joint motor values
+void PositionController::writeMultiCallback(const ros::TimerEvent&)
+{
+	bool result = false;
+	const char* log = NULL;
+
+	uint8_t id_array[dynamixel.size()];
+	uint8_t id_cnt = 0;
+
+	int32_t dynamixel_position[dynamixel.size()];	
+	
+	// Get control values
+	for(size_t index=0; index<joint_configuration.size(); index+=2)
+	{
+		int motor_id = (int) joint_configuration[index];
+		dynamixel_position[id_cnt] = dxl_wb->convertRadian2Value(motor_id, joint_configuration[index+1]);
+		id_array[id_cnt] = motor_id;
+		id_cnt++;
+	}
+	
+	result = dxl_wb->syncWrite(SYNC_WRITE_HANDLER_FOR_GOAL_POSITION, id_array, id_cnt, dynamixel_position, 1, &log);
+	if (result == false) ROS_ERROR("FAILED TO SET MOTOR POSITIONS");
+
+}
+
+
 void PositionController::publishCallback(const ros::TimerEvent&)
 {
+	// Publish dynamixel state list
 	dynamixel_state_list_pub.publish(dynamixel_state_list);
 	
+	// Publish hexapod joint IDs
+	std_msgs::Int32MultiArray array_IDs;
+	array_IDs.data.clear();
+	
+	for (size_t i=0; i<joint_identification.size(); i++)
+	{
+		array_IDs.data.push_back(joint_identification[i]);
+	}
+
+	joint_IDs_pub.publish(array_IDs);
+
+	// Publish joint state 
 	joint_state_msg.header.stamp = ros::Time::now();
 
     joint_state_msg.name.clear();
@@ -487,6 +517,7 @@ int main(int argc, char** argv)
 	// Write and Read from Topics
 	ros::Timer read_timer = node_handle.createTimer(ros::Duration(position_controller.getReadPeriod()), &PositionController::readCallback, &position_controller);
 	ros::Timer write_timer = node_handle.createTimer(ros::Duration(position_controller.getWritePeriod()), &PositionController::writeCallback, &position_controller);
+	//ros::Timer write_timer = node_handle.createTimer(ros::Duration(position_controller.getWritePeriod()), &PositionController::writeMultiCallback, &position_controller);
 	ros::Timer publish_timer = node_handle.createTimer(ros::Duration(position_controller.getPublishPeriod()), &PositionController::publishCallback, &position_controller);
 
 	ros::spin();

@@ -1,21 +1,35 @@
 #ifndef DB_ALPHA_POSITION_CONTROLLER_H
 #define DB_ALPHA_POSITION_CONTROLLER_H
 
+#include <vector>
+
 #include <ros/ros.h>
 
 #include <yaml-cpp/yaml.h>
 
+// Include sensor msgs
 #include <sensor_msgs/JointState.h>
 
+// Include Dynamixel msgs
 #include <dynamixel_workbench_toolbox/dynamixel_workbench.h>
 #include <dynamixel_workbench_msgs/DynamixelStateList.h>
 #include <dynamixel_workbench_msgs/DynamixelCommand.h>
+
+// Include std msgs
+#include "std_msgs/Float32.h"
+#include "std_msgs/Int32.h"
+#include "std_msgs/MultiArrayLayout.h"
+#include "std_msgs/MultiArrayDimension.h"
+#include "std_msgs/Float32MultiArray.h"
+#include "std_msgs/Int32MultiArray.h"
 
 // SYNC_WRITE_HANDLER
 #define SYNC_WRITE_HANDLER_FOR_GOAL_POSITION 0
 
 // SYNC_READ_HANDLER(Only for Protocol 2.0)
 #define SYNC_READ_HANDLER_FOR_PRESENT_POSITION_VELOCITY_CURRENT 0
+
+using namespace std;
 
 typedef struct 
 {
@@ -35,9 +49,11 @@ class PositionController
 		// ROS Topic Publisher
 		ros::Publisher dynamixel_state_list_pub;
 		ros::Publisher joint_states_pub;
+		ros::Publisher joint_IDs_pub;
 	
 		// ROS Topic Subscriber
 		ros::Subscriber goal_joint_state_sub;
+		ros::Subscriber multi_joint_goal_sub;
 	
 		// ROS Service Server
 		ros::ServiceServer dynamixel_command_server;
@@ -71,7 +87,6 @@ class PositionController
 		bool initWorkbench(const std::string port_name, const uint32_t baud_rate);
 		bool getDynamixelsInfo(const std::string yaml_file);
 		bool loadDynamixels();
-		//bool scanDynamixels();
 		void initMsg();
 		bool initDynamixels();
 		bool initControlItems();
@@ -88,11 +103,23 @@ class PositionController
 	
 		void readCallback(const ros::TimerEvent&);
 		void writeCallback(const ros::TimerEvent&);
+		void writeMultiCallback(const ros::TimerEvent&);
 		void publishCallback(const ros::TimerEvent&);
 	
 		void onJointStateGoal(const sensor_msgs::JointState& msg);
+		void multiJointGoal(const std_msgs::Float32MultiArray& msg);
 	
 		bool dynamixelCommandMsgCallback(dynamixel_workbench_msgs::DynamixelCommand::Request &req, dynamixel_workbench_msgs::DynamixelCommand::Response &res);
+
+		// Joint configuration vector (format [motor1_ID, motor1_VALUE, motor2_ID, motor2_VALUE, ... , motor21_ID, motor21_VALUE])
+		std::vector<float> joint_configuration = {0,0,0,0,0,0, 
+											 	  0,0,0,0,0,0, 
+											 	  0,0,0,0,0,0,
+											 	  0,0,0,0,0,0,
+											 	  0,0,0,0,0,0,
+											 	  0,0,0,0,0,0,
+											 	  0,0,0,0,0,0};
+		std::vector<int> joint_identification;
 };
 
 
