@@ -73,6 +73,7 @@ bool TorqueController::loadDynamixels()
 {
 	bool result = false;
 	const char* log;
+	int motor_cnt = 0;
 
 	for (std::pair<std::string, uint32_t> const& dxl : dynamixel) 
 	{
@@ -85,7 +86,9 @@ bool TorqueController::loadDynamixels()
 			return result;
 		}
 		else ROS_INFO("Name : %s, ID : %d, Model Number : %d", dxl.first.c_str(), dxl.second, model_number);
+		motor_cnt++;
 	}
+	ROS_INFO("Number of joints : %d", motor_cnt);
 	return result;
 }
 
@@ -112,14 +115,6 @@ void TorqueController::initMsg()
 	printf("\n");
 	printf("--------------------------------------------------------------------------\n");
 	printf("\n");
-
-    /*for (int index = 0; index < dxl_cnt_; index++)
-	{
-        printf("MODEL   : %s\n", dxl_wb_->getModelName(dxl_id_[index]));
-        printf("ID      : %d\n", dxl_id_[index]);
-        printf("\n");
-    }
-    printf("--------------------------------------------------------------------------\n");*/
 }
 
 
@@ -214,18 +209,18 @@ bool TorqueController::initSDKHandlers()
 
 void TorqueController::initPublisher()
 {
-	dynamixel_state_list_pub = priv_node_handle.advertise<dynamixel_workbench_msgs::DynamixelStateList>("dynamixel_state", 100);
-	joint_states_pub = priv_node_handle.advertise<sensor_msgs::JointState>("hexapod_states", 100);
+	dynamixel_state_list_pub = priv_node_handle.advertise<dynamixel_workbench_msgs::DynamixelStateList>("dynamixel_states_list", 100);
+	joint_states_pub = priv_node_handle.advertise<sensor_msgs::JointState>("hexapod_joint_feedback", 100);
 }
 
 void TorqueController::initSubscriber()
 {
-	goal_joint_state_sub = priv_node_handle.subscribe("current_command", 100, &TorqueController::onJointStateGoal, this);
+	goal_joint_state_sub = priv_node_handle.subscribe("hexapod_state_commands", 100, &TorqueController::onJointStateGoal, this);
 }
 
 void TorqueController::initServer()
 {
-	dynamixel_command_server = priv_node_handle.advertiseService("dynamixel_command", &TorqueController::dynamixelCommandMsgCallback, this);
+	dynamixel_command_server = priv_node_handle.advertiseService("dynamixel_request_commands", &TorqueController::dynamixelCommandMsgCallback, this);
 }
 
 void TorqueController::onJointStateGoal(const sensor_msgs::JointState& msg)
@@ -399,7 +394,7 @@ bool TorqueController::dynamixelCommandMsgCallback(dynamixel_workbench_msgs::Dyn
 
 int main(int argc, char** argv)
 {
-	ros::init(argc, argv, "dynamixel_ROS_driver_torque_controller");
+	ros::init(argc, argv, "db_dynamixel_ROS_driver");
 	ros::NodeHandle node_handle("");
 	
 	std::string port_name = "/dev/ttyUSB0";

@@ -75,6 +75,7 @@ bool HexapodController::loadDynamixels()
 {
 	bool result = false;
 	const char* log;
+	int motor_cnt = 0;
 
 	for (std::pair<std::string, uint32_t> const& dxl : dynamixel) 
 	{
@@ -87,8 +88,10 @@ bool HexapodController::loadDynamixels()
 			return result;
 		}
 		else ROS_INFO("Name : %s, ID : %d, Model Number : %d", dxl.first.c_str(), dxl.second, model_number);
+		motor_cnt++;
 		joint_identification.push_back((uint8_t)dxl.second);
 	}
+	ROS_INFO("Number of joints : %d", motor_cnt);
 	return result;
 }
 
@@ -228,23 +231,47 @@ bool HexapodController::initSDKHandlers()
 }
 
 
+// Set robot to home position during initialization
+bool HexapodController::initHomePosition()
+{
+	bool result = false;
+	const char* log = NULL;
+	
+	uint8_t id_array[dynamixel.size()];
+	uint8_t id_cnt = 0;
+
+	int32_t dynamixel_position[joint_identification.size()];
+	
+	for (int index = 0; index < joint_identification.size(); index++)
+	{ 
+		id_array[index] = joint_identification[index];
+		dynamixel_position[index] = dxl_wb->convertRadian2Value(joint_identification[index], home_position[index]);
+		id_cnt++;
+	}
+
+	result = dxl_wb->syncWrite(SYNC_WRITE_HANDLER_FOR_GOAL_POSITION, id_array, id_cnt, dynamixel_position, 1, &log);
+	ROS_INFO("Robot set to Home Position Successfully.");
+	return result;
+}
+
+
 void HexapodController::initPublisher()
 {
-	dynamixel_state_list_pub = priv_node_handle.advertise<dynamixel_workbench_msgs::DynamixelStateList>("dynamixel_state", 100);
-	joint_states_pub = priv_node_handle.advertise<sensor_msgs::JointState>("hexapod_states", 100);
+	dynamixel_state_list_pub = priv_node_handle.advertise<dynamixel_workbench_msgs::DynamixelStateList>("dynamixel_states_list", 100);
+	joint_states_pub = priv_node_handle.advertise<sensor_msgs::JointState>("hexapod_joint_feedback", 100);
 	joint_IDs_pub = priv_node_handle.advertise<std_msgs::Int32MultiArray>("hexapod_joint_IDs", 100);
 }
 
 
 void HexapodController::initSubscriber()
 {
-	goal_joint_state_sub = priv_node_handle.subscribe("hexapod_command", 100, &HexapodController::onJointStateGoal, this);
-	//multi_joint_goal_sub = priv_node_handle.subscribe("multi_joint_command", 100, &HexapodController::multiJointGoal, this);
+	goal_joint_state_sub = priv_node_handle.subscribe("hexapod_state_commands", 100, &HexapodController::onJointStateGoal, this);
+	//multi_joint_goal_sub = priv_node_handle.subscribe("hexapod_multi_joint_commands", 100, &HexapodController::multiJointGoal, this);
 }
 
 void HexapodController::initServer()
 {
-	dynamixel_command_server = priv_node_handle.advertiseService("dynamixel_command", &HexapodController::dynamixelCommandMsgCallback, this);
+	dynamixel_command_server = priv_node_handle.advertiseService("dynamixel_request_commands", &HexapodController::dynamixelCommandMsgCallback, this);
 }
 
 
@@ -385,6 +412,9 @@ void HexapodController::writeCallback(const ros::TimerEvent& t)
     result = dxl_wb->syncWrite(SYNC_WRITE_HANDLER_FOR_GOAL_POSITION, id_pos_array, id_pos_count, dynamixel_position, 1, &log);
 	if (result == false) ROS_ERROR("%s", log);
 	
+	//ROS_INFO("Position updated in the following motors: %d", id_pos_count);
+	//ROS_INFO("Torque updated in the following motors: %d", id_current_count);
+	
 	has_joint_state = false;
 }
 
@@ -513,7 +543,7 @@ bool HexapodController::dynamixelCommandMsgCallback(dynamixel_workbench_msgs::Dy
 
 int main(int argc, char** argv)
 {
-	ros::init(argc, argv, "dynamixel_ROS_driver_hexapod_controller");
+	ros::init(argc, argv, "db_dynamixel_ROS_driver");
 	ros::NodeHandle node_handle("");
 	
 	std::string port_name = "/dev/ttyUSB0";
@@ -580,6 +610,14 @@ int main(int argc, char** argv)
 		return 0;
 	}
 	
+	// Set robot in home position
+	result = hexapod_controller.initHomePosition();
+	if (result == false) 
+	{
+		ROS_ERROR("Failed to set Dung Beetle in Home Position");
+		return 0;
+	}
+
 	hexapod_controller.initPublisher();
 	hexapod_controller.initSubscriber();
 	hexapod_controller.initServer();

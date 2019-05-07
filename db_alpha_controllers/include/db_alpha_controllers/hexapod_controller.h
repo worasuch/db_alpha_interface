@@ -98,6 +98,7 @@ class HexapodController
 		bool initDynamixels();
 		bool initControlItems();
 		bool initSDKHandlers();
+		bool initHomePosition();
 	
 		double getReadPeriod() { return read_period; }
 		double getWritePeriod() { return write_period; }
@@ -129,6 +130,13 @@ class HexapodController
 											 	  0,0,0,0,0,0,
 											 	  0,0,0,0,0,0};
 		std::vector<int> joint_identification;
+		std::vector<float> home_position = {-0.035, 0.0568, -0.082, 
+                                            0.035, 0.0568, -0.082, 
+                                       		-0.233, 0.316, -0.087, 
+                                       		0.233, 0.316, -0.087, 
+                                       		-0.103, 0.023, -0.087, 
+                                       		0.103, 0.023, -0.087, 
+                                       		-0.3497, -0.367, -0.169};
 };
 
 #endif //DB_ALPHA_HEXAPOD_CONTROLLER_H

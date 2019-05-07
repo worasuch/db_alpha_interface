@@ -6,7 +6,7 @@
    <param name="dynamixel_info" value="$(find db_alpha_controllers)/config/db_alpha_position_config.yaml"/> 
  
 
-   <node name="dynamixel_ROS_driver_position_controller" pkg="db_alpha_controllers" type="position_controller" required="true" output="screen" args="$(arg usb_port) $(arg dxl_baud_rate)">
+   <node name="db_dynamixel_ROS_driver" pkg="db_alpha_controllers" type="position_controller" required="true" output="screen" args="$(arg usb_port) $(arg dxl_baud_rate)">
       <remap from="/position_controller/joint_states" to="/joint_states"/>
       <rosparam>
          publish_period: 0.01   <!--Seconds-->
