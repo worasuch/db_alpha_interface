@@ -609,6 +609,9 @@ int main(int argc, char** argv)
 		ROS_ERROR("Failed to set Dynamixel SDK Handler");
 		return 0;
 	}
+
+	// Sleep for 5 seconds to let the system set nicely
+	ros::Duration(5).sleep();
 	
 	// Set robot in home position
 	result = hexapod_controller.initHomePosition();

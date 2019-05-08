@@ -80,6 +80,12 @@ int16_t value = dxl_current / CURRENT_UNIT;
 
 ## Running Controllers:
 
+There are 3 different drivers:
+
+ - **position\_controller:** All joints (18 leg joints + 3 body joints) are controlled by position.
+ - **torque\_controller:** All joints (18 leg joints + 3 body joints) are controlled by torque.
+ - **hexapod\_controller:** CF and FT joints are controlled by torque, while TC and body joints are controlled by position.
+
 To start the any of the driver interfaces (for example, position control interface) run:
 
 ```sh
@@ -130,7 +136,7 @@ $ roslaunch db_alpha_controllers hexapod_controller.launch # You should see this
 
 ```
 
-After that, check the topic list of each controller:
+After 5 seconds, the robot should move into **home position** and the ROS network should be initialized. Check the rostopic list:
 
 ```sh
 $ rostopic list

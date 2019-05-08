@@ -538,6 +538,9 @@ int main(int argc, char** argv)
 		return 0;
 	}
 	
+	// Sleep for 5 seconds to let the system set nicely
+	ros::Duration(5).sleep();
+
 	// Set robot in home position
 	result = position_controller.initHomePosition();
 	if (result == false) 
