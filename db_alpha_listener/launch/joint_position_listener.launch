@@ -1,0 +1,4 @@
+<launch>
+    <!-- pkg = "pkg_name" type="executable_name" name="node_name" -->
+    <node pkg="db_alpha_listener" type="joint_position_listener" name="db_alpha_listener_node" output="screen"> </node> 
+</launch>

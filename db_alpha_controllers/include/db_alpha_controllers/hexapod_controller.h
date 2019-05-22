@@ -33,6 +33,7 @@
 // SYNC_WRITE_HANDLER
 #define SYNC_WRITE_HANDLER_FOR_GOAL_POSITION 0
 #define SYNC_WRITE_HANDLER_FOR_GOAL_CURRENT 1
+#define SYNC_WRITE_HANDLER_FOR_CURRENT_LIMIT 2
 
 // SYNC_READ_HANDLER(Only for Protocol 2.0)
 #define SYNC_READ_HANDLER_FOR_PRESENT_POSITION_VELOCITY_CURRENT 0
@@ -137,6 +138,13 @@ class HexapodController
                                        		-0.103, 0.023, -0.087, 
                                        		0.103, 0.023, -0.087, 
 											-0.3497, -0.367, -0.169};
+		std::vector<float> dung_beetle_pose = {-0.195, -0.420, 0.407, 
+                                          0.195, -0.420, 0.407,
+                                          -0.402, -0.259, 0.439,
+                                          0.402, -0.259, 0.439,
+                                          -0.305, 0.0, 0.394,
+                                          0.305, 0.0, 0.394,
+                                          -0.1381, -0.1595, -0.0966};
 };
 
 #endif //DB_ALPHA_HEXAPOD_CONTROLLER_H

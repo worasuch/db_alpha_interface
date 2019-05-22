@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>db_alpha_listener</name>
+  <version>0.0.0</version>
+  <description>Joint position listener for manual manipulation of robot legs</description>
+  <maintainer email="cavie17@student.sdu.dk">ros</maintainer>
+  <license>TODO</license>
+  <buildtool_depend>catkin</buildtool_depend>
+  <depend>roscpp</depend>
+  <depend>sensor_msgs</depend>
+  <depend>geometry_msgs</depend>
+  <depend>trajectory_msgs</depend>
+  <depend>dynamixel_workbench_msgs</depend>
+  <depend>cmake_modules</depend>
+</package>

@@ -221,7 +221,8 @@ bool PositionController::initHomePosition()
 	for (int index = 0; index < joint_identification.size(); index++)
 	{ 
 		id_array[index] = joint_identification[index];
-		dynamixel_position[index] = dxl_wb->convertRadian2Value(joint_identification[index], home_position[index]);
+		//dynamixel_position[index] = dxl_wb->convertRadian2Value(joint_identification[index], home_position[index]);
+		dynamixel_position[index] = dxl_wb->convertRadian2Value(joint_identification[index], dung_beetle_pose[index]);
 		id_cnt++;
 	}
 
@@ -539,7 +540,7 @@ int main(int argc, char** argv)
 	}
 	
 	// Sleep for 5 seconds to let the system set nicely
-	ros::Duration(5).sleep();
+	ros::Duration(4).sleep();
 
 	// Set robot in home position
 	result = position_controller.initHomePosition();

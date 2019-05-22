@@ -85,6 +85,10 @@ add_executable(hexapod_controller src/hexapod_controller.cpp)
 add_dependencies(hexapod_controller ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 target_link_libraries(hexapod_controller ${catkin_LIBRARIES} ${Eigen3_LIBRARIES} ${YAML_CPP_LIBRARIES})
 
+add_executable(one_leg_controller src/one_leg_controller.cpp)
+add_dependencies(one_leg_controller ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+target_link_libraries(one_leg_controller ${catkin_LIBRARIES} ${Eigen3_LIBRARIES} ${YAML_CPP_LIBRARIES})
+
 #############
 ## Install ##
 #############
