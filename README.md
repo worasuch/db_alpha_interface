@@ -1,5 +1,12 @@
 # DYNAMIXEL INTERFACE FOR ROS CONTROL OF THE DB-ALPHA ROBOT
 
+Developed as part of my Masters Thesis: 
+
+ - **Adaptive Compliance Control of a Dung Beetle Robot**.
+ - Academic year 2018-019.
+ - Carlos Viescas Huerta.
+ - University of Southern Denmark.
+ 
 ## Installation guide:
 
 This controller uses the latest version of the Dynamixel Workbench driver (May 2019)
@@ -221,3 +228,17 @@ Then verify that the latency has been set to 1 with the following command:
 ```sh
 $ cat /sys/bus/usb-serial/devices/ttyUSB0/latency_timer
 ```
+
+## Listener
+
+The package __**db\_listener**__ can be used to manually learn trajectories. Set the **torque\_controller** driver to loose robot joints:
+
+```sh
+$ roslaunch db_alpha_controllers torque_controller.launch
+```
+
+ Then run the listener and move the robot's legs manually. Joint positions will be recorded into a **.csv** file:
+
+ ```sh
+$ rosrun db_alpha_listener joint_position_listener
+ ```
