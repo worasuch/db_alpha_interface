@@ -242,6 +242,7 @@ void PositionController::initPublisher()
 
 void PositionController::initSubscriber() 
 {
+	// Change this lines to use Float34MultiArray / JointState ROS messages
 	goal_joint_state_sub = priv_node_handle.subscribe("hexapod_state_commands", 100, &PositionController::onJointStateGoal, this);
 	//multi_joint_goal_sub = priv_node_handle.subscribe("hexapod_multi_joint_commands", 100, &PositionController::multiJointGoal, this);
 }

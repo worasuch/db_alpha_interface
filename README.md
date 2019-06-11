@@ -229,6 +229,14 @@ Then verify that the latency has been set to 1 with the following command:
 $ cat /sys/bus/usb-serial/devices/ttyUSB0/latency_timer
 ```
 
+Finally, update the permissions so that the serial connection can actually send and receive values:
+
+```sh
+$ sudo chmod a+rw /dev/ttyUSB0
+```
+
+See [Mathias' guide](https://github.com/MathiasThor/my_dynamixel_workbench/wiki/MORF-Software-Installation-Guide) for setting the automatic start of the of the serial port. 
+
 ## Listener
 
 The package __**db\_listener**__ can be used to manually learn trajectories. Set the **torque\_controller** driver to loose robot joints:
