@@ -9,7 +9,7 @@ Developed as part of my Masters Thesis:
  
 ## Installation guide:
 
-This controller uses the latest version of the Dynamixel Workbench driver (May 2019)
+This controller uses the latest version of the Dynamixel Workbench driver (May 2019). The following instructions are meant for Ubuntu 18 and ROS Melodic.
 
 Install Main packages:
 
@@ -25,7 +25,7 @@ Install dependent packages:
 ```sh
 $ git clone https://github.com/ROBOTIS-GIT/DynamixelSDK.git
 $ git clone https://github.com/ROBOTIS-GIT/open_manipulator_msgs.git
-$ sudo apt-get install ros-kinetic-moveit-core ros-kinetic-moveit-ros-planning ros-kinetic-moveit-ros-planning-interface
+$ sudo apt-get install ros-melodic-moveit-core ros-melodic-moveit-ros-planning ros-melodic-moveit-ros-planning-interface
 ```
 
 Compile and build the pkgs:
