@@ -36,14 +36,35 @@ $ catkin_make
 $ source ~/catkin_ws/devel/setup.bash
 ```
 
-#### Official documentation:
+**NOTE:**
 
- - **Install:** Go to [Official Dynamixel Workbench Manual](http://emanual.robotis.com/docs/en/software/dynamixel/dynamixel_workbench/).
+Before running any of the above code, the **USB latency between the computer and the robot** must be lowered. Run the following terminal commands to resolve this:
 
+```sh
+# Option A (recommended)
+$ sudo usermod -aG dialout $USER && echo 1 | sudo tee /sys/bus/usb-serial/devices/ttyUSB0/latency_timer
 
- - **Online Motor Control Table:** Go to [ROBOTIS e-manual Dynamixel XM430-W350](http://emanual.robotis.com/docs/en/dxl/x/xm430-w350/#indirect-data).
+# Option B
+$ echo ACTION==\"add\", SUBSYSTEM==\"usb-serial\", DRIVER==\"ftdi_sio\", ATTR{latency_timer}=\"1\" > 99-dynamixelsdk-usb.rules
+$ sudo cp ./99-dynamixelsdk-usb.rules /etc/udev/rules.d/
+$ sudo udevadm control --reload-rules
+$ sudo udevadm trigger --action=add
+```
 
- - **Online Motor Datasheet:** Go to [ROBOTIS XM430-W350 support](http://support.robotis.com/en/product/actuator/dynamixel_x/xm_series/xm430-w350.htm).
+Then verify that the latency has been set to 1 with the following command:
+
+```sh
+$ cat /sys/bus/usb-serial/devices/ttyUSB0/latency_timer
+```
+
+Finally, update the permissions so that the serial connection can actually send and receive values:
+
+```sh
+$ sudo chmod a+rw /dev/ttyUSB0
+```
+
+See [Mathias' guide](https://github.com/MathiasThor/my_dynamixel_workbench/wiki/MORF-Software-Installation-Guide) for setting the automatic start of the of the serial port. 
+
 
 ## Configuration
 
@@ -85,7 +106,16 @@ float CURRENT_UNIT = 2.69;
 int16_t value = dxl_current / CURRENT_UNIT;
 ```
 
-## Running Controllers:
+#### Official documentation:
+
+ - **Install:** Go to [Official Dynamixel Workbench Manual](http://emanual.robotis.com/docs/en/software/dynamixel/dynamixel_workbench/).
+
+
+ - **Online Motor Control Table:** Go to [ROBOTIS e-manual Dynamixel XM430-W350](http://emanual.robotis.com/docs/en/dxl/x/xm430-w350/#indirect-data).
+
+ - **Online Motor Datasheet:** Go to [ROBOTIS XM430-W350 support](http://support.robotis.com/en/product/actuator/dynamixel_x/xm_series/xm430-w350.htm).
+
+## Running the interface:
 
 There are 3 different drivers:
 
@@ -93,7 +123,7 @@ There are 3 different drivers:
  - **torque\_controller:** All joints (18 leg joints + 3 body joints) are controlled by torque.
  - **hexapod\_controller:** CF and FT joints are controlled by torque, while TC and body joints are controlled by position.
 
-To start the any of the driver interfaces (for example, position control interface) run:
+To start any of the driver interfaces (for example, position control interface) run:
 
 ```sh
 $ roslaunch db_alpha_controllers hexapod_controller.launch # You should see this message: 
@@ -207,35 +237,6 @@ dynamixel_state:
   - 
     #...
 ```
-
-**NOTE:**
-
-Before running any of the above code, the **USB latency between the computer and the robot** must be lowered. Run the following terminal commands to resolve this:
-
-```sh
-# Option A (recommended)
-$ sudo usermod -aG dialout $USER && echo 1 | sudo tee /sys/bus/usb-serial/devices/ttyUSB0/latency_timer
-
-# Option B
-$ echo ACTION==\"add\", SUBSYSTEM==\"usb-serial\", DRIVER==\"ftdi_sio\", ATTR{latency_timer}=\"1\" > 99-dynamixelsdk-usb.rules
-$ sudo cp ./99-dynamixelsdk-usb.rules /etc/udev/rules.d/
-$ sudo udevadm control --reload-rules
-$ sudo udevadm trigger --action=add
-```
-
-Then verify that the latency has been set to 1 with the following command:
-
-```sh
-$ cat /sys/bus/usb-serial/devices/ttyUSB0/latency_timer
-```
-
-Finally, update the permissions so that the serial connection can actually send and receive values:
-
-```sh
-$ sudo chmod a+rw /dev/ttyUSB0
-```
-
-See [Mathias' guide](https://github.com/MathiasThor/my_dynamixel_workbench/wiki/MORF-Software-Installation-Guide) for setting the automatic start of the of the serial port. 
 
 ## Listener
 
