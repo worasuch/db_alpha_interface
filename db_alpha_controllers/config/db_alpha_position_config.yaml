@@ -5,9 +5,9 @@ id_101:
   ID: 11
   Return_Delay_Time: 0
   Operating_Mode: 3
-#  Position_P_Gain: 400
-#  Position_I_Gain: 200
-#  Position_D_Gain: 50
+#  Position_P_Gain: 1600
+#  Position_I_Gain: 1600
+#  Position_D_Gain: 400
   Profile_Velocity: 200
   Profile_Acceleration: 50
   
@@ -15,6 +15,9 @@ id_102:
   ID: 12
   Return_Delay_Time: 0
   Operating_Mode: 3
+#  Position_P_Gain: 1600
+#  Position_I_Gain: 1600
+#  Position_D_Gain: 400
   Profile_Velocity: 200
   Profile_Acceleration: 50
 
@@ -22,6 +25,9 @@ id_103:
   ID: 13
   Return_Delay_Time: 0
   Operating_Mode: 3
+#  Position_P_Gain: 1600
+#  Position_I_Gain: 1600
+#  Position_D_Gain: 400
   Profile_Velocity: 200
   Profile_Acceleration: 50
 
@@ -29,6 +35,9 @@ id_104:
   ID: 21
   Return_Delay_Time: 0
   Operating_Mode: 3
+#  Position_P_Gain: 1600
+#  Position_I_Gain: 1600
+#  Position_D_Gain: 400
   Profile_Velocity: 200
   Profile_Acceleration: 50
 
@@ -36,6 +45,9 @@ id_105:
   ID: 22
   Return_Delay_Time: 0
   Operating_Mode: 3
+#  Position_P_Gain: 1600
+#  Position_I_Gain: 1600
+#  Position_D_Gain: 400
   Profile_Velocity: 200
   Profile_Acceleration: 50
 
@@ -43,6 +55,9 @@ id_106:
   ID: 23
   Return_Delay_Time: 0
   Operating_Mode: 3
+#  Position_P_Gain: 1600
+#  Position_I_Gain: 1600
+#  Position_D_Gain: 400
   Profile_Velocity: 200
   Profile_Acceleration: 50
 
@@ -50,6 +65,9 @@ id_107:
   ID: 31
   Return_Delay_Time: 0
   Operating_Mode: 3
+#  Position_P_Gain: 1600
+#  Position_I_Gain: 1600
+#  Position_D_Gain: 400
   Profile_Velocity: 200
   Profile_Acceleration: 50
 
@@ -57,6 +75,9 @@ id_108:
   ID: 32
   Return_Delay_Time: 0
   Operating_Mode: 3
+#  Position_P_Gain: 1600
+#  Position_I_Gain: 1600
+#  Position_D_Gain: 400
   Profile_Velocity: 200
   Profile_Acceleration: 50
 
@@ -64,6 +85,9 @@ id_109:
   ID: 33
   Return_Delay_Time: 0
   Operating_Mode: 3
+#  Position_P_Gain: 1600
+#  Position_I_Gain: 1600
+#  Position_D_Gain: 400
   Profile_Velocity: 200
   Profile_Acceleration: 50
 
@@ -71,6 +95,9 @@ id_110:
   ID: 41
   Return_Delay_Time: 0
   Operating_Mode: 3
+#  Position_P_Gain: 1600
+#  Position_I_Gain: 1600
+#  Position_D_Gain: 400
   Profile_Velocity: 200
   Profile_Acceleration: 50
 
@@ -78,6 +105,9 @@ id_111:
   ID: 42
   Return_Delay_Time: 0
   Operating_Mode: 3
+#  Position_P_Gain: 1600
+#  Position_I_Gain: 1600
+#  Position_D_Gain: 400
   Profile_Velocity: 200
   Profile_Acceleration: 50
 
@@ -85,6 +115,9 @@ id_112:
   ID: 43
   Return_Delay_Time: 0
   Operating_Mode: 3
+#  Position_P_Gain: 1600
+#  Position_I_Gain: 1600
+#  Position_D_Gain: 400
   Profile_Velocity: 200
   Profile_Acceleration: 50
 
@@ -92,6 +125,9 @@ id_113:
   ID: 51
   Return_Delay_Time: 0
   Operating_Mode: 3
+#  Position_P_Gain: 1600
+#  Position_I_Gain: 1600
+#  Position_D_Gain: 400
   Profile_Velocity: 200
   Profile_Acceleration: 50
 
@@ -99,6 +135,9 @@ id_114:
   ID: 52
   Return_Delay_Time: 0
   Operating_Mode: 3
+#  Position_P_Gain: 1600
+#  Position_I_Gain: 1600
+#  Position_D_Gain: 400
   Profile_Velocity: 200
   Profile_Acceleration: 50
 
@@ -106,6 +145,9 @@ id_115:
   ID: 53
   Return_Delay_Time: 0
   Operating_Mode: 3
+#  Position_P_Gain: 1600
+#  Position_I_Gain: 1600
+#  Position_D_Gain: 400
   Profile_Velocity: 200
   Profile_Acceleration: 50
 
@@ -113,6 +155,9 @@ id_116:
   ID: 61
   Return_Delay_Time: 0
   Operating_Mode: 3
+#  Position_P_Gain: 1600
+#  Position_I_Gain: 1600
+#  Position_D_Gain: 400
   Profile_Velocity: 200
   Profile_Acceleration: 50
 
@@ -120,6 +165,9 @@ id_117:
   ID: 62
   Return_Delay_Time: 0
   Operating_Mode: 3
+#  Position_P_Gain: 1600
+#  Position_I_Gain: 1600
+#  Position_D_Gain: 400
   Profile_Velocity: 200
   Profile_Acceleration: 50
 
@@ -127,6 +175,9 @@ id_118:
   ID: 63
   Return_Delay_Time: 0
   Operating_Mode: 3
+#  Position_P_Gain: 1600
+#  Position_I_Gain: 1600
+#  Position_D_Gain: 400
   Profile_Velocity: 200
   Profile_Acceleration: 50
 
@@ -134,6 +185,9 @@ id_119:
   ID: 71
   Return_Delay_Time: 0
   Operating_Mode: 3
+#  Position_P_Gain: 1600
+#  Position_I_Gain: 1600
+#  Position_D_Gain: 400
   Profile_Velocity: 200
   Profile_Acceleration: 50
 
@@ -141,6 +195,9 @@ id_120:
   ID: 72
   Return_Delay_Time: 0
   Operating_Mode: 3
+#  Position_P_Gain: 1600
+#  Position_I_Gain: 1600
+#  Position_D_Gain: 400
   Profile_Velocity: 200
   Profile_Acceleration: 50
 
@@ -148,5 +205,8 @@ id_121:
   ID: 73
   Return_Delay_Time: 0
   Operating_Mode: 3
+#  Position_P_Gain: 1600
+#  Position_I_Gain: 1600
+#  Position_D_Gain: 400
   Profile_Velocity: 200
   Profile_Acceleration: 50

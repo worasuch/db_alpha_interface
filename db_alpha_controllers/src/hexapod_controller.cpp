@@ -398,7 +398,7 @@ void HexapodController::writeCallback(const ros::TimerEvent& t)
 
     // Split into position and torque control
     int total_joints = 21;
-    int tau_joints = 12;
+    int tau_joints = 12; // 12 = CF & FT || 18 = Full leg
     int pos_joints = total_joints - tau_joints;
     
 	uint8_t id_current_count = 0;
@@ -420,6 +420,8 @@ void HexapodController::writeCallback(const ros::TimerEvent& t)
 	for (uint8_t index = 0; index < id_cnt; index++)
 	{ 
 		if(id_array[index] == 11 || id_array[index] == 21 || id_array[index] == 31 || id_array[index] == 41 || id_array[index] == 51 || id_array[index] == 61 || id_array[index] == 71 || id_array[index] == 72 || id_array[index] == 73)
+		//if(id_array[index] == 11 || id_array[index] == 21 || id_array[index] == 31 || id_array[index] == 41 || id_array[index] == 71 || id_array[index] == 72 || id_array[index] == 73)
+		//if(id_array[index] == 71 || id_array[index] == 72 || id_array[index] == 73) // Full leg compliance
         {
             dynamixel_position[id_pos_count] = dxl_wb->convertRadian2Value(id_array[index], goal_state.position[index]);
             id_pos_array[id_pos_count] = id_array[index];
@@ -472,7 +474,7 @@ void HexapodController::writeMultiCallback(const ros::TimerEvent&)
 
 	// Split into position and torque control
     int total_joints = 21;
-    int tau_joints = 12;
+    int tau_joints = 18; // 12 = CF & FT || 18 = Full leg
     int pos_joints = total_joints - tau_joints;
     
 	uint8_t id_current_count = 0; // counter
@@ -488,7 +490,8 @@ void HexapodController::writeMultiCallback(const ros::TimerEvent&)
 	for(int index=0; index<joint_configuration.size(); index+=2)
 	{
 		int motor_id = (int) joint_configuration[index];
-		if(motor_id == 11 || motor_id == 21 || motor_id == 31 || motor_id == 41 || motor_id == 51 || motor_id == 61 || motor_id == 71 || motor_id == 72 || motor_id == 73)
+		if(motor_id == 11 || motor_id == 21 || motor_id == 31 || motor_id == 41 || motor_id == 51 || motor_id == 61 || motor_id == 71 || motor_id == 72 || motor_id == 73) // CF & FT compliance
+		//if(motor_id == 71 || motor_id == 72 || motor_id == 73) // Full leg compliance
 		{
 			dynamixel_position[id_pos_count] = dxl_wb->convertRadian2Value(motor_id, joint_configuration[index+1]);
 			id_pos_array[id_pos_count] = motor_id;
