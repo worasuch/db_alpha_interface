@@ -17,7 +17,32 @@ HexapodController::HexapodController() : node_handle(""), priv_node_handle("~"),
 // Destructor
 HexapodController::~HexapodController()
 {
+	ROS_INFO("Torque Disable");
 
+	const char* log;
+
+	for (std::pair<std::string, uint32_t> const& dxl : dynamixel)
+	{
+		dxl_wb->torqueOff((uint8_t)dxl.second);
+
+		for (std::pair<std::string, ItemValue> const& info : dynamixel_info)
+		{
+			if (dxl.first == info.first)
+			{
+				if (info.second.item_name != "ID" && info.second.item_name != "Baud_Rate")
+				{
+					bool result = dxl_wb->itemWrite((uint8_t)dxl.second, info.second.item_name.c_str(), info.second.value, &log);
+					if (result == false)
+					{
+						ROS_ERROR("%s", log);
+						ROS_ERROR("Failed to write value[%d] on items[%s] to Dynamixel[Name : %s, ID : %d]", info.second.value, info.second.item_name.c_str(), dxl.first.c_str(), dxl.second);
+//						return false;
+					}
+				}
+			}
+		}
+		dxl_wb->torqueOff((uint8_t)dxl.second);
+	}
 }
 
 
