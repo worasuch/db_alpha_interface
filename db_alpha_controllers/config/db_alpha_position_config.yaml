@@ -138,8 +138,8 @@ id_114:
 #  Position_P_Gain: 1600
 #  Position_I_Gain: 1600
 #  Position_D_Gain: 400
-  Profile_Velocity: 200
-  Profile_Acceleration: 50
+#  Profile_Velocity: 200
+#  Profile_Acceleration: 50
 
 id_115:
   ID: 53
@@ -168,8 +168,8 @@ id_117:
 #  Position_P_Gain: 1600
 #  Position_I_Gain: 1600
 #  Position_D_Gain: 400
-  Profile_Velocity: 200
-  Profile_Acceleration: 50
+#  Profile_Velocity: 200
+#  Profile_Acceleration: 50
 
 id_118:
   ID: 63
