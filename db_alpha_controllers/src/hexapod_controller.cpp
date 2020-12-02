@@ -422,8 +422,8 @@ void HexapodController::writeCallback(const ros::TimerEvent& t)
 	uint8_t id_cnt = 0;
 
     // Split into position and torque control
-    int total_joints = 21;
-    int tau_joints = 12; // 12 = CF & FT || 18 = Full leg
+    int total_joints = 2;
+    int tau_joints = 1; // 12 = CF & FT || 18 = Full leg
     int pos_joints = total_joints - tau_joints;
     
 	uint8_t id_current_count = 0;
@@ -454,6 +454,7 @@ void HexapodController::writeCallback(const ros::TimerEvent& t)
         }
         else
         {
+            std::cout << dxl_wb->convertCurrent2Value(goal_state.effort[index]) << endl;
             dynamixel_current[id_current_count] = dxl_wb->convertCurrent2Value(goal_state.effort[index]);
 			dynamixel_alpha[id_current_count] = dxl_wb->convertRadian2Value(id_array[index], goal_state.position[index]);
             id_current_array[id_current_count] = id_array[index];
@@ -480,12 +481,12 @@ void HexapodController::writeCallback(const ros::TimerEvent& t)
 
 	//------------------------
 	// SET GOAL POSITION -> Non-compliant joints
-    result = dxl_wb->syncWrite(SYNC_WRITE_HANDLER_FOR_GOAL_POSITION, id_pos_array, id_pos_count, dynamixel_position, 1, &log);
-	if (result == false) ROS_ERROR("%s", log);
+    // result = dxl_wb->syncWrite(SYNC_WRITE_HANDLER_FOR_GOAL_POSITION, id_pos_array, id_pos_count, dynamixel_position, 1, &log);
+	// if (result == false) ROS_ERROR("%s", log);
 	//------------------------
 
-	//ROS_INFO("Position updated in the following motors: %d", id_pos_count);
-	//ROS_INFO("Torque updated in the following motors: %d", id_current_count);
+	ROS_INFO("Position updated in the following motors: %d", id_pos_count);
+	ROS_INFO("Torque updated in the following motors: %d", id_current_count);
 	
 	has_joint_state = false;
 }
@@ -687,12 +688,12 @@ int main(int argc, char** argv)
 	ros::Duration(5).sleep();
 	
 	// Set robot in home position
-	result = hexapod_controller.initHomePosition();
-	if (result == false) 
-	{
-		ROS_ERROR("Failed to set Dung Beetle in Home Position");
-		return 0;
-	}
+	// result = hexapod_controller.initHomePosition();
+	// if (result == false) 
+	// {
+	// 	ROS_ERROR("Failed to set Dung Beetle in Home Position");
+	// 	return 0;
+	// }
 
 	hexapod_controller.initPublisher();
 	hexapod_controller.initSubscriber();
