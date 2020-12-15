@@ -1,15 +1,15 @@
 <!--<?xml version="1.0"?>-->
 <launch>
-   <arg name="usb_port"                default="/dev/ttyUSB0"/>
-   <arg name="dxl_baud_rate"           default="1000000"/>
-   
-   <param name="dynamixel_info"          value="$(find db_alpha_controllers)/config/one_motor_current_based_pos_config.yaml"/>
+   <arg name="usb_port" default="/dev/ttyUSB0"/>
+   <arg name="dxl_baud_rate" default="4000000"/>
+
+   <param name="dynamixel_info" value="$(find db_alpha_controllers)/config/one_motor_current_based_pos_config.yaml"/>
 
    <node name="db_dynamixel_ROS_driver" pkg="db_alpha_controllers" type="hexapod_controller" required="true" output="screen" args="$(arg usb_port) $(arg dxl_baud_rate)">
       <rosparam>
-         publish_period: 0.01   <!--Seconds-->
-         dxl_read_period: 0.01     <!--Seconds (Must be <= 0.01)-->
-         dxl_write_period: 0.01   <!--Seconds -->
+         publish_period: 0.01                                       <!--Seconds-->
+         dxl_read_period: 0.01                                         <!--Seconds (Must be <= 0.01)-->
+         dxl_write_period: 0.01                                       <!--Seconds -->
       </rosparam>
    </node>
 </launch>

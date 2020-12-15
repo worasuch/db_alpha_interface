@@ -44,20 +44,20 @@ from sensor_msgs.msg import JointState
 def talker():
     pub = rospy.Publisher('/db_dynamixel_ROS_driver/hexapod_state_commands', JointState, queue_size=10)
     rospy.init_node('talker', anonymous=True)
-    rate = rospy.Rate(10) # 10hz
+    rate = rospy.Rate(30) # 10hz
     
     o1 = 0.1
     o2 = 0.1
 
     while not rospy.is_shutdown():
-        o1 = math.tanh(1.4*o1 + 0.5*o2 + 0.01)
-        o2 = math.tanh(1.4*o2 - 0.5*o1 + 0.01)
+        o1 = math.tanh(1.4*o1 + 0.3*o2 + 0.01)
+        o2 = math.tanh(1.4*o2 - 0.3*o1 + 0.01)
 
         joint_state = JointState()
-        joint_state.name = ["id_1"] 
-        joint_state.position = [o1]
-        joint_state.velocity = [0]
-        joint_state.effort = [abs(o1*200)]
+        joint_state.name = ["id_11", "id_21", "id_31"] 
+        joint_state.position = [o1, o1, o1]
+        joint_state.velocity = [0, 0, 0]
+        joint_state.effort = [600, 600, 600]
 
         hello_str = "hello world %s" % rospy.get_time()
         rospy.loginfo(hello_str)

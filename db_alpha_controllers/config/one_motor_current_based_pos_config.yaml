@@ -1,9 +1,92 @@
 # You can find control table of Dynamixel on emanual (http://emanual.robotis.com/#control-table)
 # Control table item has to be set Camel_Case and not included whitespace
 # You are supposed to set at least Dynamixel ID
-id_1:
-  ID: 1
+id_11:
+  ID: 11
   Return_Delay_Time: 0
   Operating_Mode: 5
-  Profile_Velocity: 200
-  Profile_Acceleration: 50
+
+id_12:
+  ID: 12
+  Return_Delay_Time: 0
+  Operating_Mode: 5
+
+id_13:
+  ID: 13
+  Return_Delay_Time: 0
+  Operating_Mode: 5
+
+id_21:
+  ID: 21
+  Return_Delay_Time: 0
+  Operating_Mode: 5
+
+id_22:
+  ID: 22
+  Return_Delay_Time: 0
+  Operating_Mode: 5
+
+id_23:
+  ID: 23
+  Return_Delay_Time: 0
+  Operating_Mode: 5
+
+id_31:
+  ID: 31
+  Return_Delay_Time: 0
+  Operating_Mode: 5
+
+id_32:
+  ID: 32
+  Return_Delay_Time: 0
+  Operating_Mode: 5
+
+id_33:
+  ID: 33
+  Return_Delay_Time: 0
+  Operating_Mode: 5
+
+id_41:
+  ID: 41
+  Return_Delay_Time: 0
+  Operating_Mode: 5
+
+id_42:
+  ID: 42
+  Return_Delay_Time: 0
+  Operating_Mode: 5
+
+id_43:
+  ID: 43
+  Return_Delay_Time: 0
+  Operating_Mode: 5
+
+id_51:
+  ID: 51
+  Return_Delay_Time: 0
+  Operating_Mode: 5
+
+id_52:
+  ID: 52
+  Return_Delay_Time: 0
+  Operating_Mode: 5
+
+id_53:
+  ID: 53
+  Return_Delay_Time: 0
+  Operating_Mode: 5
+
+id_61:
+  ID: 61
+  Return_Delay_Time: 0
+  Operating_Mode: 5
+
+id_62:
+  ID: 62
+  Return_Delay_Time: 0
+  Operating_Mode: 5
+
+id_63:
+  ID: 63
+  Return_Delay_Time: 0
+  Operating_Mode: 5

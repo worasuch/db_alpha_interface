@@ -444,22 +444,22 @@ void HexapodController::writeCallback(const ros::TimerEvent& t)
 	
 	for (uint8_t index = 0; index < id_cnt; index++)
 	{ 
-		if(id_array[index] == 11 || id_array[index] == 21 || id_array[index] == 31 || id_array[index] == 41 || id_array[index] == 51 || id_array[index] == 61 || id_array[index] == 71 || id_array[index] == 72 || id_array[index] == 73)
+		// if(id_array[index] == 11 || id_array[index] == 21 || id_array[index] == 31 || id_array[index] == 41 || id_array[index] == 51 || id_array[index] == 61 || id_array[index] == 71 || id_array[index] == 72 || id_array[index] == 73)
 		//if(id_array[index] == 11 || id_array[index] == 21 || id_array[index] == 31 || id_array[index] == 41 || id_array[index] == 71 || id_array[index] == 72 || id_array[index] == 73)
 		//if(id_array[index] == 71 || id_array[index] == 72 || id_array[index] == 73) // Full leg compliance
-        {
-            dynamixel_position[id_pos_count] = dxl_wb->convertRadian2Value(id_array[index], goal_state.position[index]);
-            id_pos_array[id_pos_count] = id_array[index];
-            id_pos_count++;
-        }
-        else
-        {
+        // {
+        //     dynamixel_position[id_pos_count] = dxl_wb->convertRadian2Value(id_array[index], goal_state.position[index]);
+        //     id_pos_array[id_pos_count] = id_array[index];
+        //     id_pos_count++;
+        // }
+        // else
+        // {
             std::cout << dxl_wb->convertCurrent2Value(goal_state.effort[index]) << endl;
             dynamixel_current[id_current_count] = dxl_wb->convertCurrent2Value(goal_state.effort[index]);
 			dynamixel_alpha[id_current_count] = dxl_wb->convertRadian2Value(id_array[index], goal_state.position[index]);
             id_current_array[id_current_count] = id_array[index];
             id_current_count++;
-        }   
+        // }   
 	}
 
 	// -----------------------
