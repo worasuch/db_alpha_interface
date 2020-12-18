@@ -54,10 +54,11 @@ def talker():
         o2 = math.tanh(1.4*o2 - 0.3*o1 + 0.01)
 
         joint_state = JointState()
-        joint_state.name = ["id_11", "id_21", "id_31"] 
-        joint_state.position = [o1, o1, o1]
-        joint_state.velocity = [0, 0, 0]
-        joint_state.effort = [600, 600, 600]
+        joint_state.name = ["id_11", "id_21", "id_31", "id_12", "id_22", "id_32", "id_13", "id_23", "id_33",   
+                            "id_41", "id_51", "id_61", "id_42", "id_52", "id_62", "id_43", "id_53", "id_63"] 
+        joint_state.position = [0, 0, 0, 2, 2, 2, -1, -1, -1, 0, 0, 0, 2, 2, 2, -1, -1, -1]
+        joint_state.velocity = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        joint_state.effort = [600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600]
 
         hello_str = "hello world %s" % rospy.get_time()
         rospy.loginfo(hello_str)

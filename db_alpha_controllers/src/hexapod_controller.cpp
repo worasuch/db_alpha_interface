@@ -422,8 +422,8 @@ void HexapodController::writeCallback(const ros::TimerEvent& t)
 	uint8_t id_cnt = 0;
 
     // Split into position and torque control
-    int total_joints = 2;
-    int tau_joints = 1; // 12 = CF & FT || 18 = Full leg
+    int total_joints = 18;
+    int tau_joints = 18; // 12 = CF & FT || 18 = Full leg
     int pos_joints = total_joints - tau_joints;
     
 	uint8_t id_current_count = 0;
