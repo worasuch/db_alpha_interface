@@ -20,7 +20,7 @@ PositionController::PositionController() : node_handle(""), priv_node_handle("~"
 // Destructor
 PositionController::~PositionController() 
 {
-	usleep(1000000);
+	usleep(1000000); // sleep for 1 second
 	ROS_INFO("Torque Disable");
 
 	const char* log;
@@ -28,11 +28,16 @@ PositionController::~PositionController()
 	for (std::pair<std::string, uint32_t> const& dxl : dynamixel)
 	{
 		dxl_wb->torqueOff((uint8_t)dxl.second);
+		// std::cout << "dxl.second: " << dxl.second << std::endl;
 
 		for (std::pair<std::string, ItemValue> const& info : dynamixel_info)
 		{
+			// std::cout << "dxl.first: " << dxl.first << std::endl;
 			if (dxl.first == info.first)
 			{
+				// std::cout << "info.second.item_name: " << info.second.item_name << std::endl;
+				// std::cout << "info.second.item_name: " << info.second.item_name << std::endl;
+				// std::cout << "info.second.value	   : " << info.second.value << std::endl;
 				if (info.second.item_name != "ID" && info.second.item_name != "Baud_Rate")
 				{
 					bool result = dxl_wb->itemWrite((uint8_t)dxl.second, info.second.item_name.c_str(), info.second.value, &log);
@@ -277,6 +282,8 @@ void PositionController::initSubscriber()
 void PositionController::initServer()
 {
 	dynamixel_command_server = priv_node_handle.advertiseService("dynamixel_request_commands", &PositionController::dynamixelCommandMsgCallback, this);
+	dynamixel_command_server_reboot = priv_node_handle.advertiseService("dynamixel_request_commands_reboot", &PositionController::dynamixelRebootCallback, this);
+	dynamixel_command_server_torqueOff = priv_node_handle.advertiseService("dynamixel_request_commands_torqueOff", &PositionController::dynamixelTorqueOffCallback, this);
 }
 
 
@@ -488,6 +495,72 @@ bool PositionController::dynamixelCommandMsgCallback(dynamixel_workbench_msgs::D
 	return true;
 }
 
+bool PositionController::dynamixelRebootCallback(std_srvs::Trigger::Request &req, std_srvs::Trigger::Response &res) 
+{
+	// Check shutdown address: 63, size: 1 byte, Data Name: 'Shutdown', initial value: 52
+	// Then reboot
+	bool result = false;
+	const char* log;
+
+	for (std::pair<std::string, uint32_t> const& dxl : dynamixel)
+	{
+		std::cout << "dxl.second: " << dxl.second << std::endl;
+		int32_t status;
+		// int32_t status;
+		std::cout << "status1: " << status << std::endl;
+		bool read_result = dxl_wb->itemRead((uint8_t)dxl.second, "Hardware_Error_Status", &status, &log);
+		std::cout << "read_result: " << read_result << std::endl;
+		std::cout << "status2: " << status << std::endl;
+		if(read_result == false){
+				// ROS_ERROR("%s", log);
+				// ROS_ERROR("Failed to Read Hardware Error Status from Motor ID : %d]", dxl.second);
+				// return false;
+				bool result = dxl_wb->reboot((uint8_t)dxl.second, &log);
+				// if (result == false)
+				// {
+				// 	ROS_ERROR("%s", log);
+				// 	ROS_ERROR("Failed to Reboot Dynamixel Motor ID : %d]", dxl.second);
+				// 	return false;
+				// }
+		}
+		else{
+			// if(status == 1){
+			// 	bool result = dxl_wb->reboot((uint8_t)dxl.second, &log);
+			// 	if (result == false)
+			// 	{
+			// 		ROS_ERROR("%s", log);
+			// 		ROS_ERROR("Failed to Reboot Dynamixel Motor ID : %d]", dxl.second);
+			// 		return false;
+			// 	}
+			// }
+		}
+	}
+	res.success = true;
+	res.message = "All Hardware Error Status is OK!";
+	return true;
+}
+
+bool PositionController::dynamixelTorqueOffCallback(std_srvs::Trigger::Request &req, std_srvs::Trigger::Response &res) 
+{
+	bool result = false;
+	const char* log;
+
+	for (std::pair<std::string, uint32_t> const& dxl : dynamixel)
+	{
+		int32_t data;
+		bool result = dxl_wb->torqueOff((uint8_t) dxl.second, &log);
+		// if(result == false){
+		// 	res.success = false;
+		// 	res.message = "Failed to Torque Off Dynamixel Motor";
+		// 	ROS_ERROR("%s", log);
+		// 	ROS_ERROR("Failed to Torque Off Dynamixel Motor ID : %d]", dxl.second);
+		// 	return false;
+		// }
+	}
+	res.success = true;
+	res.message = "All Motor Torque are Off!";
+	return true;
+}
 
 //*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
 

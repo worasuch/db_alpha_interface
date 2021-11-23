@@ -42,23 +42,42 @@ from std_msgs.msg import String
 from sensor_msgs.msg import JointState
 
 def talker():
+    motors_num = 18
+
     pub = rospy.Publisher('/db_dynamixel_ROS_driver/hexapod_state_commands', JointState, queue_size=10)
     rospy.init_node('talker', anonymous=True)
     rate = rospy.Rate(30) # 10hz
-    
-    o1 = 0.1
+
+    joint_state = JointState()
+    joint_state.name = ["id_11", "id_21", "id_31", "id_12", "id_22", "id_32", "id_13", "id_23", "id_33",   
+                    "id_41", "id_51", "id_61", "id_42", "id_52", "id_62", "id_43", "id_53", "id_63"] 
+    joint_state.position = [0, 0, 0, 2, 2, 2, -1, -1, -1, 
+                            0, 0, 0, 2, 2, 2, -1, -1, -1]
+    joint_bias = [0, 0, 0, 2, 2, 2, -1, -1, -1, 
+                0, 0, 0, 2, 2, 2, -1, -1, -1]
+
+    joint_state.velocity = [0, 0, 0, 0, 0, 0, 0, 0, 0, 
+                            0, 0, 0, 0, 0, 0, 0, 0, 0]
+    joint_state.effort = [200, 200, 200, 200, 200, 200, 200, 200, 200, 
+                            200, 200, 200, 200, 200, 200, 200, 200, 200]
+
+    for i in range(motors_num):
+        joint_state.velocity[i] = 0
+        joint_state.effort[i] = 200
+    o1 = 0.9
     o2 = 0.1
 
     while not rospy.is_shutdown():
         o1 = math.tanh(1.4*o1 + 0.3*o2 + 0.01)
         o2 = math.tanh(1.4*o2 - 0.3*o1 + 0.01)
 
-        joint_state = JointState()
-        joint_state.name = ["id_11", "id_21", "id_31", "id_12", "id_22", "id_32", "id_13", "id_23", "id_33",   
-                            "id_41", "id_51", "id_61", "id_42", "id_52", "id_62", "id_43", "id_53", "id_63"] 
-        joint_state.position = [0, 0, 0, 2, 2, 2, -1, -1, -1, 0, 0, 0, 2, 2, 2, -1, -1, -1]
-        joint_state.velocity = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-        joint_state.effort = [600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600]
+        o1_com = o1*0.1
+        o2_com = o2*0.1
+        for i in range(motors_num):
+            # if i%3 == 0:
+            #     joint_state.position[i] = joint_bias[i] + o2_com
+            # else:
+            joint_state.position[i] = joint_bias[i] + o1_com
 
         hello_str = "hello world %s" % rospy.get_time()
         rospy.loginfo(hello_str)

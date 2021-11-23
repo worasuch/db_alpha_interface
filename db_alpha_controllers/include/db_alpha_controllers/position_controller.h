@@ -2,6 +2,7 @@
 #define DB_ALPHA_POSITION_CONTROLLER_H
 
 #include <vector>
+#include <iostream>
 #include <unistd.h>
 
 #include <ros/ros.h>
@@ -23,6 +24,7 @@
 #include "std_msgs/MultiArrayDimension.h"
 #include "std_msgs/Float32MultiArray.h"
 #include "std_msgs/Int32MultiArray.h"
+#include "std_srvs/Trigger.h"
 
 // SYNC_WRITE_HANDLER
 #define SYNC_WRITE_HANDLER_FOR_GOAL_POSITION 0
@@ -58,6 +60,8 @@ class PositionController
 	
 		// ROS Service Server
 		ros::ServiceServer dynamixel_command_server;
+		ros::ServiceServer dynamixel_command_server_reboot;
+		ros::ServiceServer dynamixel_command_server_torqueOff;
 	
 		// Dynamixel Workbench Parameters
 		DynamixelWorkbench* dxl_wb;
@@ -112,6 +116,8 @@ class PositionController
 		void multiJointGoal(const std_msgs::Float32MultiArray& msg);
 	
 		bool dynamixelCommandMsgCallback(dynamixel_workbench_msgs::DynamixelCommand::Request &req, dynamixel_workbench_msgs::DynamixelCommand::Response &res);
+		bool dynamixelRebootCallback(std_srvs::Trigger::Request &req, std_srvs::Trigger::Response &res);
+		bool dynamixelTorqueOffCallback(std_srvs::Trigger::Request &req, std_srvs::Trigger::Response &res);
 
 		// Joint configuration vector (format [motor1_ID, motor1_VALUE, motor2_ID, motor2_VALUE, ... , motor21_ID, motor21_VALUE])
 		std::vector<float> joint_configuration = {0,0,0,0,0,0, 
