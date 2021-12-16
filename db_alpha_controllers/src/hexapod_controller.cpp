@@ -422,7 +422,7 @@ void HexapodController::writeCallback(const ros::TimerEvent& t)
 	uint8_t id_cnt = 0;
 
     // Split into position and torque control
-    int total_joints = 18;
+    int total_joints = 21;
     int tau_joints = 18; // 12 = CF & FT || 18 = Full leg
     int pos_joints = total_joints - tau_joints;
     
@@ -438,28 +438,37 @@ void HexapodController::writeCallback(const ros::TimerEvent& t)
 
 	for (std::string name : goal_state.name)
 	{
+		// std::cout << "name: " << name << endl;
+		// std::cout << "id_array[id_cnt]: " << id_array[id_cnt] << endl;
+		// std::cout << "id_cnt: " << id_cnt << endl;
 		id_array[id_cnt] = (uint8_t) dynamixel[name];
 		id_cnt++;
 	}
 	
 	for (uint8_t index = 0; index < id_cnt; index++)
 	{ 
+		// std::cout << "index: " << index << endl;
+		// std::cout << "id_array[index]: " << id_array[index] << endl;
 		// if(id_array[index] == 11 || id_array[index] == 21 || id_array[index] == 31 || id_array[index] == 41 || id_array[index] == 51 || id_array[index] == 61 || id_array[index] == 71 || id_array[index] == 72 || id_array[index] == 73)
 		//if(id_array[index] == 11 || id_array[index] == 21 || id_array[index] == 31 || id_array[index] == 41 || id_array[index] == 71 || id_array[index] == 72 || id_array[index] == 73)
-		//if(id_array[index] == 71 || id_array[index] == 72 || id_array[index] == 73) // Full leg compliance
-        // {
-        //     dynamixel_position[id_pos_count] = dxl_wb->convertRadian2Value(id_array[index], goal_state.position[index]);
-        //     id_pos_array[id_pos_count] = id_array[index];
-        //     id_pos_count++;
-        // }
-        // else
-        // {
-            std::cout << dxl_wb->convertCurrent2Value(goal_state.effort[index]) << endl;
+		if(id_array[index] == 71 || id_array[index] == 72 || id_array[index] == 73) // Full leg compliance
+        {
+            dynamixel_position[id_pos_count] = dxl_wb->convertRadian2Value(id_array[index], goal_state.position[index]);
+            id_pos_array[id_pos_count] = id_array[index];
+            id_pos_count++;
+        }
+        else
+        {
+            // dynamixel_position[id_pos_count] = dxl_wb->convertRadian2Value(id_array[index], goal_state.position[index]);
+            // id_pos_array[id_pos_count] = id_array[index];
+            // id_pos_count++;
             dynamixel_current[id_current_count] = dxl_wb->convertCurrent2Value(goal_state.effort[index]);
 			dynamixel_alpha[id_current_count] = dxl_wb->convertRadian2Value(id_array[index], goal_state.position[index]);
             id_current_array[id_current_count] = id_array[index];
             id_current_count++;
-        // }   
+            // std::cout << "pos value: " << dynamixel_position[id_pos_count] << endl;
+            // std::cout << "effort value: " << dynamixel_current[id_current_count] << endl;
+        }   
 	}
 
 	// -----------------------
@@ -470,8 +479,8 @@ void HexapodController::writeCallback(const ros::TimerEvent& t)
 
 	//------------------------
 	// SET GOAL POSITION + LIMITED TORQUE -> Compliant joints
-	//result = dxl_wb->syncWrite(SYNC_WRITE_HANDLER_FOR_CURRENT_LIMIT, id_current_array, id_current_count, dynamixel_current, 1, &log);
-	//if (result == false) ROS_ERROR("%s", log);
+	// result = dxl_wb->syncWrite(SYNC_WRITE_HANDLER_FOR_CURRENT_LIMIT, id_current_array, id_current_count, dynamixel_current, 1, &log);
+	// if (result == false) ROS_ERROR("%s", log);
 
 	result = dxl_wb->syncWrite(SYNC_WRITE_HANDLER_FOR_GOAL_POSITION, id_current_array, id_current_count, dynamixel_alpha, 1, &log);
 	if (result == false) ROS_ERROR("%s", log);
@@ -481,8 +490,8 @@ void HexapodController::writeCallback(const ros::TimerEvent& t)
 
 	//------------------------
 	// SET GOAL POSITION -> Non-compliant joints
-    // result = dxl_wb->syncWrite(SYNC_WRITE_HANDLER_FOR_GOAL_POSITION, id_pos_array, id_pos_count, dynamixel_position, 1, &log);
-	// if (result == false) ROS_ERROR("%s", log);
+    result = dxl_wb->syncWrite(SYNC_WRITE_HANDLER_FOR_GOAL_POSITION, id_pos_array, id_pos_count, dynamixel_position, 1, &log);
+	if (result == false) ROS_ERROR("%s", log);
 	//------------------------
 
 	ROS_INFO("Position updated in the following motors: %d", id_pos_count);

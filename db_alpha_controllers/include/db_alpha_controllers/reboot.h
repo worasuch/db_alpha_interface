@@ -98,6 +98,7 @@ class PositionController
 		bool initControlItems();
 		bool initSDKHandlers();
 		bool initHomePosition();
+		bool RebootMotors();
 	
 		double getReadPeriod() { return read_period; }
 		double getWritePeriod() { return write_period; }
