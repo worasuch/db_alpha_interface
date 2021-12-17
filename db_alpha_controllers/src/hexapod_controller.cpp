@@ -323,6 +323,9 @@ void HexapodController::initSubscriber()
 void HexapodController::initServer()
 {
 	dynamixel_command_server = priv_node_handle.advertiseService("dynamixel_request_commands", &HexapodController::dynamixelCommandMsgCallback, this);
+	dynamixel_command_server_reboot = priv_node_handle.advertiseService("dynamixel_request_commands_reboot", &HexapodController::dynamixelRebootCallback, this);
+	dynamixel_command_server_torqueOff = priv_node_handle.advertiseService("dynamixel_request_commands_torqueOff", &HexapodController::dynamixelTorqueOffCallback, this);
+	dynamixel_command_server_torqueOn = priv_node_handle.advertiseService("dynamixel_request_commands_torqueOn", &HexapodController::dynamixelTorqueOnCallback, this);
 }
 
 
@@ -620,6 +623,94 @@ bool HexapodController::dynamixelCommandMsgCallback(dynamixel_workbench_msgs::Dy
 	return true;
 }
 
+bool HexapodController::dynamixelRebootCallback(std_srvs::Trigger::Request &req, std_srvs::Trigger::Response &res) 
+{
+	// Check shutdown address: 63, size: 1 byte, Data Name: 'Shutdown', initial value: 52
+	// Then reboot
+	bool result = false;
+	const char* log;
+
+	for (std::pair<std::string, uint32_t> const& dxl : dynamixel)
+	{
+		std::cout << "dxl.second: " << dxl.second << std::endl;
+		int32_t status;
+		// int32_t status;
+		std::cout << "status1: " << status << std::endl;
+		bool read_result = dxl_wb->itemRead((uint8_t)dxl.second, "Hardware_Error_Status", &status, &log);
+		std::cout << "read_result: " << read_result << std::endl;
+		std::cout << "status2: " << status << std::endl;
+		if(read_result == false){
+				// ROS_ERROR("%s", log);
+				// ROS_ERROR("Failed to Read Hardware Error Status from Motor ID : %d]", dxl.second);
+				// return false;
+				bool result = dxl_wb->reboot((uint8_t)dxl.second, &log);
+				// if (result == false)
+				// {
+				// 	ROS_ERROR("%s", log);
+				// 	ROS_ERROR("Failed to Reboot Dynamixel Motor ID : %d]", dxl.second);
+				// 	return false;
+				// }
+		}
+		else{
+			// if(status == 1){
+			// 	bool result = dxl_wb->reboot((uint8_t)dxl.second, &log);
+			// 	if (result == false)
+			// 	{
+			// 		ROS_ERROR("%s", log);
+			// 		ROS_ERROR("Failed to Reboot Dynamixel Motor ID : %d]", dxl.second);
+			// 		return false;
+			// 	}
+			// }
+		}
+	}
+	res.success = true;
+	res.message = "All Hardware Error Status is OK!";
+	return true;
+}
+
+bool HexapodController::dynamixelTorqueOffCallback(std_srvs::Trigger::Request &req, std_srvs::Trigger::Response &res) 
+{
+	bool result = false;
+	const char* log;
+
+	for (std::pair<std::string, uint32_t> const& dxl : dynamixel)
+	{
+		int32_t data;
+		bool result = dxl_wb->torqueOff((uint8_t) dxl.second, &log);
+		if(result == false){
+			res.success = false;
+			res.message = "Failed to Torque Off Dynamixel Motor";
+			ROS_ERROR("%s", log);
+			ROS_ERROR("Failed to Torque Off Dynamixel Motor ID : %d]", dxl.second);
+			// return false;
+		}
+	}
+	res.success = true;
+	res.message = "All Motor Torque are Off!";
+	return true;
+}
+
+bool HexapodController::dynamixelTorqueOnCallback(std_srvs::Trigger::Request &req, std_srvs::Trigger::Response &res) 
+{
+	bool result = false;
+	const char* log;
+
+	for (std::pair<std::string, uint32_t> const& dxl : dynamixel)
+	{
+		int32_t data;
+		bool result = dxl_wb->torqueOn((uint8_t) dxl.second, &log);
+		if(result == false){
+			res.success = false;
+			res.message = "Failed to Torque Off Dynamixel Motor";
+			ROS_ERROR("%s", log);
+			ROS_ERROR("Failed to Torque Off Dynamixel Motor ID : %d]", dxl.second);
+			// return false;
+		}
+	}
+	res.success = true;
+	res.message = "All Motor Torque are Off!";
+	return true;
+}
 
 //*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
 
