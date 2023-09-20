@@ -112,6 +112,18 @@ class PositionController
 	
 		bool dynamixelCommandMsgCallback(dynamixel_workbench_msgs::DynamixelCommand::Request &req, dynamixel_workbench_msgs::DynamixelCommand::Response &res);
 
+		// ---------- 	Slalom (21 DOFs)	-----------------------------//
+		// Joint configuration vector (format [motor1_ID, motor1_VALUE, motor2_ID, motor2_VALUE, ... , motor21_ID, motor21_VALUE])
+		std::vector<float> joint_configuration = {	0,0,0,0,0,0,0,0, 
+											 	  	0,0,0,0,0,0,0,0, 
+											 	  	0,0,0,0,0,0,0,0,
+											 	  	0,0,0,0,0,0,0,0,
+											 	  	0,0,0,0,0,0,0,0,0,0	};
+		std::vector<int> joint_identification;
+
+
+		// ---------- Dung Beetle (21 DOFs) -----------------------------//
+		/*
 		// Joint configuration vector (format [motor1_ID, motor1_VALUE, motor2_ID, motor2_VALUE, ... , motor21_ID, motor21_VALUE])
 		std::vector<float> joint_configuration = {0,0,0,0,0,0, 
 											 	  0,0,0,0,0,0, 
@@ -121,27 +133,31 @@ class PositionController
 											 	  0,0,0,0,0,0,
 											 	  0,0,0,0,0,0};
 		std::vector<int> joint_identification;
-		std::vector<float> home_position = {-0.035, 0.0568, -0.082, 
-                                            0.035, 0.0568, -0.082, 
-                                       		-0.233, 0.316, -0.087, 
-                                       		0.233, 0.316, -0.087, 
-                                       		-0.103, 0.023, -0.087, 
-                                       		0.103, 0.023, -0.087, 
-											-0.3497, -0.367, -0.169};
-		std::vector<float> dung_beetle_pose_old = {-0.195, -0.3, 0.3, 
-                                          0.195, -0.3, 0.3,
-                                          -0.402, -0.179, 0.36,
-                                          0.402, -0.179, 0.36,
-                                          -0.305, 0.0, 0.394,
-                                          0.305, 0.0, 0.394,
-                                          -0.1381, -0.3595, -0.0966};
+
+		std::vector<float> home_position = {-0.035,  0.0568,-0.082, 
+                                             0.035,  0.0568,-0.082, 
+                                       		-0.233,  0.316, -0.087, 
+                                       		 0.233,  0.316, -0.087, 
+                                       		-0.103,  0.023, -0.087, 
+                                       		 0.103,  0.023, -0.087, 
+											-0.3497,-0.367, -0.169};
+
+		std::vector<float> dung_beetle_pose_old = {-0.195, -0.3,    0.3, 
+                                          			0.195, -0.3,    0.3,
+                                          		   -0.402, -0.179,  0.36,
+                                          			0.402, -0.179,  0.36,
+                                          		   -0.305,  0.0,    0.394,
+                                          			0.305,  0.0,    0.394,
+                                          		   -0.1381,-0.3595,-0.0966};
+
 		std::vector<float> dung_beetle_pose = {-0.123, -0.356, 0.360,
-											   0.123, -0.356, 0.360,
+											    0.123, -0.356, 0.360,
 											   -0.367, -0.213, 0.363,
-											   0.367, -0.213, 0.363,
-											   -0.279, -0.02, 0.397,
-											   0.279, -0.02, 0.397, 
-											   -0.190, -0.227, -0.098};
+											    0.367, -0.213, 0.363,
+											   -0.279, -0.02,  0.397,
+											    0.279, -0.02,  0.397, 
+											   -0.190, -0.227,-0.098};
+	*/
 };
 
 

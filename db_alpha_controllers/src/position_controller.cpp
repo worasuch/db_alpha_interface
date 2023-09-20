@@ -222,7 +222,7 @@ bool PositionController::initHomePosition()
 	{ 
 		id_array[index] = joint_identification[index];
 		//dynamixel_position[index] = dxl_wb->convertRadian2Value(joint_identification[index], home_position[index]);
-		dynamixel_position[index] = dxl_wb->convertRadian2Value(joint_identification[index], dung_beetle_pose[index]);
+		// dynamixel_position[index] = dxl_wb->convertRadian2Value(joint_identification[index], dung_beetle_pose[index]);  // TODO happ comment
 		id_cnt++;
 	}
 
@@ -544,12 +544,12 @@ int main(int argc, char** argv)
 	ros::Duration(4).sleep();
 
 	// Set robot in home position
-	result = position_controller.initHomePosition();
+	/*result = position_controller.initHomePosition();
 	if (result == false) 
 	{
 		ROS_ERROR("Failed to set Dung Beetle in Home Position");
 		return 0;
-	}
+	}*/
 
 	// Initialize ROS network
 	position_controller.initPublisher();

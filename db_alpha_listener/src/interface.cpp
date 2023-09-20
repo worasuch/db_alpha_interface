@@ -9,7 +9,7 @@ Interface::Interface(int argc,char* argv[])
 {
     db_listener = new Listener(argc, argv);
     cnt = 0;
-    positions_csv.open("/home/charlie/Workspace/AI/MasterThesis/experiments/learned_positions.csv");
+    positions_csv.open("/home/happy/Documents/learned_positions.csv");
     db_listener->initMsg();
 }
 
@@ -43,7 +43,7 @@ bool Interface::runListener()
     else
     {
         positions_csv.close();
-        cout << "Data saved to /Workspace/AI/MasterThesis/experiments/learned_positions.csv" << endl; 
+        cout << "Data saved to /home/happy/Documents/learned_positions.csv" << endl; 
         delete db_listener;
         return false;
     }
