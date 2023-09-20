@@ -3,7 +3,7 @@
 //
 
 
-#include "db_alpha_controllers/position_controller.h"
+#include "db_alpha_controllers/reboot.h"
 
 
 
@@ -23,8 +23,17 @@ PositionController::~PositionController()
 	usleep(1000000); // sleep for 1 second
 	ROS_INFO("Torque Disable");
 
+	const char* log;
+
 	for (std::pair<std::string, uint32_t> const& dxl : dynamixel)
 	{
+		dxl_wb->torqueOff((uint8_t)dxl.second);
+		// std::cout << "dxl.second: " << dxl.second << std::endl;
+
+		for (std::pair<std::string, ItemValue> const& info : dynamixel_info)
+		{
+
+		}
 		dxl_wb->torqueOff((uint8_t)dxl.second);
 	}
 }
@@ -239,7 +248,7 @@ bool PositionController::initHomePosition()
 	{ 
 		id_array[index] = joint_identification[index];
 		//dynamixel_position[index] = dxl_wb->convertRadian2Value(joint_identification[index], home_position[index]);
-		// dynamixel_position[index] = dxl_wb->convertRadian2Value(joint_identification[index], dung_beetle_pose[index]);  // TODO happ comment
+		dynamixel_position[index] = dxl_wb->convertRadian2Value(joint_identification[index], dung_beetle_pose[index]);
 		id_cnt++;
 	}
 
@@ -571,6 +580,51 @@ bool PositionController::dynamixelTorqueOnCallback(std_srvs::Trigger::Request &r
 	return true;
 }
 
+bool PositionController::RebootMotors() 
+{
+	// Check shutdown address: 63, size: 1 byte, Data Name: 'Shutdown', initial value: 52
+	// Then reboot
+	bool result = false;
+	const char* log;
+
+	// dynamixel = map(name, motor_ID) 
+	for (std::pair<std::string, uint32_t> const& dxl : dynamixel)
+	{
+		std::cout << "dxl.second: " << dxl.second << std::endl;
+		int32_t status;
+		// int32_t status;
+		std::cout << "status1: " << status << std::endl;
+		bool read_result = dxl_wb->itemRead((uint8_t)dxl.second, "Hardware_Error_Status", &status, &log);
+		std::cout << "read_result: " << read_result << std::endl;
+		std::cout << "status2: " << status << std::endl;
+		if(read_result == false){
+				// ROS_ERROR("%s", log);
+				// ROS_ERROR("Failed to Read Hardware Error Status from Motor ID : %d]", dxl.second);
+				// return false;
+				bool result = dxl_wb->reboot((uint8_t)dxl.second, &log);
+				// if (result == false)
+				// {
+				// 	ROS_ERROR("%s", log);
+				// 	ROS_ERROR("Failed to Reboot Dynamixel Motor ID : %d]", dxl.second);
+				// 	return false;
+				// }
+		}
+		else{
+			// if(status == 1){
+			// 	bool result = dxl_wb->reboot((uint8_t)dxl.second, &log);
+			// 	if (result == false)
+			// 	{
+			// 		ROS_ERROR("%s", log);
+			// 		ROS_ERROR("Failed to Reboot Dynamixel Motor ID : %d]", dxl.second);
+			// 		return false;
+			// 	}
+			// }
+		}
+	}
+	return true;
+}
+
+
 //*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
 
 
@@ -617,20 +671,28 @@ int main(int argc, char** argv)
 	}
 
 	// Load Dynamixels into the program
-	result = position_controller.loadDynamixels();
-	if (result == false) 
+	// result = position_controller.loadDynamixels();
+	// if (result == false) 
+	// {
+	// 	ROS_ERROR("Please check Dynamixel ID or BaudRate");
+	// 	return 0;
+	// }
+
+	// Reboot Motors
+	result = position_controller.RebootMotors();
+	if (result == false)
 	{
-		ROS_ERROR("Please check Dynamixel ID or BaudRate");
+		ROS_ERROR("Failed to Reboot Motors");
 		return 0;
 	}
 
 	// Initialize dynamixels
-	result = position_controller.initDynamixels();
-	if (result == false)
-	{
-		ROS_ERROR("Please check control table (http://emanual.robotis.com/#control-table)");
-		return 0;
-	}
+	// result = position_controller.initDynamixels();
+	// if (result == false)
+	// {
+	// 	ROS_ERROR("Please check control table (http://emanual.robotis.com/#control-table)");
+	// 	return 0;
+	// }
 
 	// Initialize control parameters
 	result = position_controller.initControlItems();
@@ -641,36 +703,36 @@ int main(int argc, char** argv)
 	}
 
 	// Initialize SDK handlers
-	result = position_controller.initSDKHandlers();
-	if (result == false) 
-	{
-		ROS_ERROR("Failed to set Dynamixel SDK Handler");
-		return 0;
-	}
+	// result = position_controller.initSDKHandlers();
+	// if (result == false) 
+	// {
+	// 	ROS_ERROR("Failed to set Dynamixel SDK Handler");
+	// 	return 0;
+	// }
 	
 	// Sleep for 5 seconds to let the system set nicely
-	ros::Duration(4).sleep();
+	// ros::Duration(4).sleep();
 
 	// Set robot in home position
-	/*result = position_controller.initHomePosition();
-	if (result == false) 
-	{
-		ROS_ERROR("Failed to set Dung Beetle in Home Position");
-		return 0;
-	}*/
+//	result = position_controller.initHomePosition();
+//	if (result == false)
+//	{
+//		ROS_ERROR("Failed to set Dung Beetle in Home Position");
+//		return 0;
+//	}
 
 	// Initialize ROS network
-	position_controller.initPublisher();
-	position_controller.initSubscriber();
-	position_controller.initServer();
+	// position_controller.initPublisher();
+	// position_controller.initSubscriber();
+	// position_controller.initServer();
 	
 	// Write and Read from Topics
-	ros::Timer read_timer = node_handle.createTimer(ros::Duration(position_controller.getReadPeriod()), &PositionController::readCallback, &position_controller);
-	ros::Timer write_timer = node_handle.createTimer(ros::Duration(position_controller.getWritePeriod()), &PositionController::writeCallback, &position_controller);
+	// ros::Timer read_timer = node_handle.createTimer(ros::Duration(position_controller.getReadPeriod()), &PositionController::readCallback, &position_controller);
+	// ros::Timer write_timer = node_handle.createTimer(ros::Duration(position_controller.getWritePeriod()), &PositionController::writeCallback, &position_controller);
 	//ros::Timer write_timer = node_handle.createTimer(ros::Duration(position_controller.getWritePeriod()), &PositionController::writeMultiCallback, &position_controller);
-	ros::Timer publish_timer = node_handle.createTimer(ros::Duration(position_controller.getPublishPeriod()), &PositionController::publishCallback, &position_controller);
+	// ros::Timer publish_timer = node_handle.createTimer(ros::Duration(position_controller.getPublishPeriod()), &PositionController::publishCallback, &position_controller);
 
-	ros::spin();
+	// ros::spin();
 
 	return 0;
 }	

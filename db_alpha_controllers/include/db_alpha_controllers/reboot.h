@@ -1,14 +1,9 @@
-//
-// Created by Carlos Viescas Huerta on May 2019
-//
-
-/* ROS DYNAMIXEL DRIVER FOR COMBINED TORQUE & POSITION CONTROL */
-         /* Articulated dung beetle hexapod robot  */
-
-#ifndef DB_ALPHA_HEXAPOD_CONTROLLER_H
-#define DB_ALPHA_HEXAPOD_CONTROLLER_H
+#ifndef DB_ALPHA_POSITION_CONTROLLER_H
+#define DB_ALPHA_POSITION_CONTROLLER_H
 
 #include <vector>
+#include <iostream>
+#include <unistd.h>
 
 #include <ros/ros.h>
 
@@ -33,8 +28,6 @@
 
 // SYNC_WRITE_HANDLER
 #define SYNC_WRITE_HANDLER_FOR_GOAL_POSITION 0
-#define SYNC_WRITE_HANDLER_FOR_GOAL_CURRENT 1
-#define SYNC_WRITE_HANDLER_FOR_CURRENT_LIMIT 2
 
 // SYNC_READ_HANDLER(Only for Protocol 2.0)
 #define SYNC_READ_HANDLER_FOR_PRESENT_POSITION_VELOCITY_CURRENT 0
@@ -47,11 +40,12 @@ typedef struct
   int32_t value;
 } ItemValue;
 
-class HexapodController
-{
-    private:
 
-        // ROS NodeHandle
+class PositionController
+{
+  	private:
+    	
+		// ROS NodeHandle
     	ros::NodeHandle node_handle;
 		ros::NodeHandle priv_node_handle;
 	
@@ -84,19 +78,19 @@ class HexapodController
 		sensor_msgs::JointState goal_state;
 		
 		double read_period;
-    	double write_period;
+   		double write_period;
 		double publish_period;
-
-    public:
-
-        // Constructor
-        HexapodController();
-        
-        // Destructor
-        ~HexapodController();
-
-        // Initialization
-        bool initWorkbench(const std::string port_name, const uint32_t baud_rate);
+	
+	public:
+		
+		// Constructor
+		PositionController();
+		
+		// Destructor
+		~PositionController();
+	
+		// Initialization 
+		bool initWorkbench(const std::string port_name, const uint32_t baud_rate);
 		bool getDynamixelsInfo(const std::string yaml_file);
 		bool loadDynamixels();
 		void initMsg();
@@ -104,16 +98,17 @@ class HexapodController
 		bool initControlItems();
 		bool initSDKHandlers();
 		bool initHomePosition();
+		bool RebootMotors();
 	
 		double getReadPeriod() { return read_period; }
 		double getWritePeriod() { return write_period; }
 		double getPublishPeriod() { return publish_period; }
+	
 		void initPublisher();
 		void initSubscriber();
 	
 		void initServer();
 	
-        // ROS Topic Callbacks
 		void readCallback(const ros::TimerEvent&);
 		void writeCallback(const ros::TimerEvent&);
 		void writeMultiCallback(const ros::TimerEvent&);
@@ -122,7 +117,6 @@ class HexapodController
 		void onJointStateGoal(const sensor_msgs::JointState& msg);
 		void multiJointGoal(const std_msgs::Float32MultiArray& msg);
 	
-        // ROS Service Callback
 		bool dynamixelCommandMsgCallback(dynamixel_workbench_msgs::DynamixelCommand::Request &req, dynamixel_workbench_msgs::DynamixelCommand::Response &res);
 		bool dynamixelRebootCallback(std_srvs::Trigger::Request &req, std_srvs::Trigger::Response &res);
 		bool dynamixelTorqueOffCallback(std_srvs::Trigger::Request &req, std_srvs::Trigger::Response &res);
@@ -163,12 +157,39 @@ class HexapodController
 //                                          -0.2885, -0.35, 0.0};
 
 		//silicone test
-//		vector<float> dung_beetle_pose = {0.2619, -1.3222, -0.5238,
-//										  0.2619, -1.2222, -0.5238,
-//										  0.2794, -0.92, -0.5238,
-//										  0.2794on	, -0.92, -0.5238,
+//		vector<float> dung_beetle_pose = {0.2619, -1.2222, -0.5238,
+//										  0.2619, -1.1222, -0.5238,
+//										  0.2794, -1.22, -0.5238,
+//										  0.2794, -1.22, -0.5238,
 //										  0.3492, -1.3968, -0.3492,
 //										  0.3492, -1.4968, -0.3492,
+//										  -0.2885, -0.35, 0.0};
+
+		//V3 silicone
+		vector<float> dung_beetle_pose = {-0.1, -1.0, -0.2,
+										  -0.1, -1.0, -0.2,
+										  0.2, -0.80, -0.2,
+										  0.2, -0.80, -0.2,
+										  0.2, -1.5, -0.2,
+										  0.2, -1.5, -0.2,
+										  -0.2885, -0.35, -0.1};
+
+		//V3 silicone TEsting
+//		vector<float> dung_beetle_pose = {-0.1, -0.7, -0.2,
+//										  -0.1, -0.7, -0.2,
+//										  0.2, -0.70, -0.2,
+//										  0.2, -0.70, -0.2,
+//										  0.2, -1.5, -0.2,
+//										  0.2, -1.5, -0.2,
+//										  -0.2885, -0.35, -0.1};
+
+		//sitting pose
+//		vector<float> dung_beetle_pose = {-0.5, -1.5, -1.0,
+//										  -0.5, -1.5, -1.0,
+//										  0.0, -1.5, -1.0,
+//										  0.0, -1.5, -1.0,
+//										  1.3, -1.5,  0.0,
+//										  1.3, -1.5,  0.0,
 //										  -0.2885, -0.35, 0.0};
 
 		std::vector<float> dung_beetle_pose_old = {-0.195, -0.3, 0.3, 
@@ -178,8 +199,6 @@ class HexapodController
                                           -0.305, 0.0, 0.394,
                                           0.305, 0.0, 0.394,
                                           -0.1381, -0.3595, -0.0966};
-
-		// Carlos Email
 //		std::vector<float> dung_beetle_pose = {-0.123, -0.356, 0.360,
 //											   0.123, -0.356, 0.360,
 //											   -0.367, -0.213, 0.363,
@@ -187,15 +206,8 @@ class HexapodController
 //											   -0.279, -0.02, 0.397,
 //											   0.279, -0.02, 0.397,
 //											   -0.190, -0.227, -0.098};
-//
-		//V3 silicone
-		vector<float> dung_beetle_pose = {-0.1, -1.0, -0.2,
-										  -0.1, -1.0, -0.2,
-										  0.2, -0.80, -0.2,
-										  0.2, -0.80, -0.2,
-										  0.2, -1.5, -0.2,
-										  0.2, -1.5, -0.2,
-										  -0.2885, -0.35, -0.1};
 };
 
-#endif //DB_ALPHA_HEXAPOD_CONTROLLER_H
+
+
+#endif //DB_ALPHA_POSITION_CONTROLLER_H

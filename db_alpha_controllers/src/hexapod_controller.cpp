@@ -17,7 +17,32 @@ HexapodController::HexapodController() : node_handle(""), priv_node_handle("~"),
 // Destructor
 HexapodController::~HexapodController()
 {
+	ROS_INFO("Torque Disable");
 
+	const char* log;
+
+	for (std::pair<std::string, uint32_t> const& dxl : dynamixel)
+	{
+		dxl_wb->torqueOff((uint8_t)dxl.second);
+
+		for (std::pair<std::string, ItemValue> const& info : dynamixel_info)
+		{
+			if (dxl.first == info.first)
+			{
+				if (info.second.item_name != "ID" && info.second.item_name != "Baud_Rate")
+				{
+					bool result = dxl_wb->itemWrite((uint8_t)dxl.second, info.second.item_name.c_str(), info.second.value, &log);
+					if (result == false)
+					{
+						ROS_ERROR("%s", log);
+						ROS_ERROR("Failed to write value[%d] on items[%s] to Dynamixel[Name : %s, ID : %d]", info.second.value, info.second.item_name.c_str(), dxl.first.c_str(), dxl.second);
+//						return false;
+					}
+				}
+			}
+		}
+		dxl_wb->torqueOff((uint8_t)dxl.second);
+	}
 }
 
 
@@ -298,6 +323,9 @@ void HexapodController::initSubscriber()
 void HexapodController::initServer()
 {
 	dynamixel_command_server = priv_node_handle.advertiseService("dynamixel_request_commands", &HexapodController::dynamixelCommandMsgCallback, this);
+	dynamixel_command_server_reboot = priv_node_handle.advertiseService("dynamixel_request_commands_reboot", &HexapodController::dynamixelRebootCallback, this);
+	dynamixel_command_server_torqueOff = priv_node_handle.advertiseService("dynamixel_request_commands_torqueOff", &HexapodController::dynamixelTorqueOffCallback, this);
+	dynamixel_command_server_torqueOn = priv_node_handle.advertiseService("dynamixel_request_commands_torqueOn", &HexapodController::dynamixelTorqueOnCallback, this);
 }
 
 
@@ -398,7 +426,7 @@ void HexapodController::writeCallback(const ros::TimerEvent& t)
 
     // Split into position and torque control
     int total_joints = 21;
-    int tau_joints = 12; // 12 = CF & FT || 18 = Full leg
+    int tau_joints = 18; // 12 = CF & FT || 18 = Full leg
     int pos_joints = total_joints - tau_joints;
     
 	uint8_t id_current_count = 0;
@@ -413,15 +441,20 @@ void HexapodController::writeCallback(const ros::TimerEvent& t)
 
 	for (std::string name : goal_state.name)
 	{
+		// std::cout << "name: " << name << endl;
+		// std::cout << "id_array[id_cnt]: " << id_array[id_cnt] << endl;
+		// std::cout << "id_cnt: " << id_cnt << endl;
 		id_array[id_cnt] = (uint8_t) dynamixel[name];
 		id_cnt++;
 	}
 	
 	for (uint8_t index = 0; index < id_cnt; index++)
 	{ 
-		if(id_array[index] == 11 || id_array[index] == 21 || id_array[index] == 31 || id_array[index] == 41 || id_array[index] == 51 || id_array[index] == 61 || id_array[index] == 71 || id_array[index] == 72 || id_array[index] == 73)
+		// std::cout << "index: " << index << endl;
+		// std::cout << "id_array[index]: " << id_array[index] << endl;
+		// if(id_array[index] == 11 || id_array[index] == 21 || id_array[index] == 31 || id_array[index] == 41 || id_array[index] == 51 || id_array[index] == 61 || id_array[index] == 71 || id_array[index] == 72 || id_array[index] == 73)
 		//if(id_array[index] == 11 || id_array[index] == 21 || id_array[index] == 31 || id_array[index] == 41 || id_array[index] == 71 || id_array[index] == 72 || id_array[index] == 73)
-		//if(id_array[index] == 71 || id_array[index] == 72 || id_array[index] == 73) // Full leg compliance
+		if(id_array[index] == 71 || id_array[index] == 72 || id_array[index] == 73) // Full leg compliance
         {
             dynamixel_position[id_pos_count] = dxl_wb->convertRadian2Value(id_array[index], goal_state.position[index]);
             id_pos_array[id_pos_count] = id_array[index];
@@ -429,10 +462,15 @@ void HexapodController::writeCallback(const ros::TimerEvent& t)
         }
         else
         {
+            // dynamixel_position[id_pos_count] = dxl_wb->convertRadian2Value(id_array[index], goal_state.position[index]);
+            // id_pos_array[id_pos_count] = id_array[index];
+            // id_pos_count++;
             dynamixel_current[id_current_count] = dxl_wb->convertCurrent2Value(goal_state.effort[index]);
 			dynamixel_alpha[id_current_count] = dxl_wb->convertRadian2Value(id_array[index], goal_state.position[index]);
             id_current_array[id_current_count] = id_array[index];
             id_current_count++;
+            // std::cout << "pos value: " << dynamixel_position[id_pos_count] << endl;
+            // std::cout << "effort value: " << dynamixel_current[id_current_count] << endl;
         }   
 	}
 
@@ -444,8 +482,8 @@ void HexapodController::writeCallback(const ros::TimerEvent& t)
 
 	//------------------------
 	// SET GOAL POSITION + LIMITED TORQUE -> Compliant joints
-	//result = dxl_wb->syncWrite(SYNC_WRITE_HANDLER_FOR_CURRENT_LIMIT, id_current_array, id_current_count, dynamixel_current, 1, &log);
-	//if (result == false) ROS_ERROR("%s", log);
+	// result = dxl_wb->syncWrite(SYNC_WRITE_HANDLER_FOR_CURRENT_LIMIT, id_current_array, id_current_count, dynamixel_current, 1, &log);
+	// if (result == false) ROS_ERROR("%s", log);
 
 	result = dxl_wb->syncWrite(SYNC_WRITE_HANDLER_FOR_GOAL_POSITION, id_current_array, id_current_count, dynamixel_alpha, 1, &log);
 	if (result == false) ROS_ERROR("%s", log);
@@ -459,8 +497,8 @@ void HexapodController::writeCallback(const ros::TimerEvent& t)
 	if (result == false) ROS_ERROR("%s", log);
 	//------------------------
 
-	//ROS_INFO("Position updated in the following motors: %d", id_pos_count);
-	//ROS_INFO("Torque updated in the following motors: %d", id_current_count);
+	ROS_INFO("Position updated in the following motors: %d", id_pos_count);
+	ROS_INFO("Torque updated in the following motors: %d", id_current_count);
 	
 	has_joint_state = false;
 }
@@ -585,6 +623,94 @@ bool HexapodController::dynamixelCommandMsgCallback(dynamixel_workbench_msgs::Dy
 	return true;
 }
 
+bool HexapodController::dynamixelRebootCallback(std_srvs::Trigger::Request &req, std_srvs::Trigger::Response &res) 
+{
+	// Check shutdown address: 63, size: 1 byte, Data Name: 'Shutdown', initial value: 52
+	// Then reboot
+	bool result = false;
+	const char* log;
+
+	for (std::pair<std::string, uint32_t> const& dxl : dynamixel)
+	{
+		std::cout << "dxl.second: " << dxl.second << std::endl;
+		int32_t status;
+		// int32_t status;
+		std::cout << "status1: " << status << std::endl;
+		bool read_result = dxl_wb->itemRead((uint8_t)dxl.second, "Hardware_Error_Status", &status, &log);
+		std::cout << "read_result: " << read_result << std::endl;
+		std::cout << "status2: " << status << std::endl;
+		if(read_result == false){
+				// ROS_ERROR("%s", log);
+				// ROS_ERROR("Failed to Read Hardware Error Status from Motor ID : %d]", dxl.second);
+				// return false;
+				bool result = dxl_wb->reboot((uint8_t)dxl.second, &log);
+				// if (result == false)
+				// {
+				// 	ROS_ERROR("%s", log);
+				// 	ROS_ERROR("Failed to Reboot Dynamixel Motor ID : %d]", dxl.second);
+				// 	return false;
+				// }
+		}
+		else{
+			// if(status == 1){
+			// 	bool result = dxl_wb->reboot((uint8_t)dxl.second, &log);
+			// 	if (result == false)
+			// 	{
+			// 		ROS_ERROR("%s", log);
+			// 		ROS_ERROR("Failed to Reboot Dynamixel Motor ID : %d]", dxl.second);
+			// 		return false;
+			// 	}
+			// }
+		}
+	}
+	res.success = true;
+	res.message = "All Hardware Error Status is OK!";
+	return true;
+}
+
+bool HexapodController::dynamixelTorqueOffCallback(std_srvs::Trigger::Request &req, std_srvs::Trigger::Response &res) 
+{
+	bool result = false;
+	const char* log;
+
+	for (std::pair<std::string, uint32_t> const& dxl : dynamixel)
+	{
+		int32_t data;
+		bool result = dxl_wb->torqueOff((uint8_t) dxl.second, &log);
+		if(result == false){
+			res.success = false;
+			res.message = "Failed to Torque Off Dynamixel Motor";
+			ROS_ERROR("%s", log);
+			ROS_ERROR("Failed to Torque Off Dynamixel Motor ID : %d]", dxl.second);
+			// return false;
+		}
+	}
+	res.success = true;
+	res.message = "All Motor Torque are Off!";
+	return true;
+}
+
+bool HexapodController::dynamixelTorqueOnCallback(std_srvs::Trigger::Request &req, std_srvs::Trigger::Response &res) 
+{
+	bool result = false;
+	const char* log;
+
+	for (std::pair<std::string, uint32_t> const& dxl : dynamixel)
+	{
+		int32_t data;
+		bool result = dxl_wb->torqueOn((uint8_t) dxl.second, &log);
+		if(result == false){
+			res.success = false;
+			res.message = "Failed to Torque Off Dynamixel Motor";
+			ROS_ERROR("%s", log);
+			ROS_ERROR("Failed to Torque Off Dynamixel Motor ID : %d]", dxl.second);
+			// return false;
+		}
+	}
+	res.success = true;
+	res.message = "All Motor Torque are Off!";
+	return true;
+}
 
 //*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
 
@@ -662,12 +788,12 @@ int main(int argc, char** argv)
 	ros::Duration(5).sleep();
 	
 	// Set robot in home position
-	result = hexapod_controller.initHomePosition();
-	if (result == false) 
-	{
-		ROS_ERROR("Failed to set Dung Beetle in Home Position");
-		return 0;
-	}
+	// result = hexapod_controller.initHomePosition();
+	// if (result == false) 
+	// {
+	// 	ROS_ERROR("Failed to set Dung Beetle in Home Position");
+	// 	return 0;
+	// }
 
 	hexapod_controller.initPublisher();
 	hexapod_controller.initSubscriber();

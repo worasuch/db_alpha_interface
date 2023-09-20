@@ -251,3 +251,16 @@ $ roslaunch db_alpha_controllers torque_controller.launch
  ```sh
 $ rosrun db_alpha_listener joint_position_listener
  ```
+
+## Current based Position control for DSF-CPG
+
+Use to control the dynamixel motors in Current-based position control Mode (Mode: 5)
+
+```sh
+$ roslaunch db_alpha_controllers current_based_torque_controller.launch
+```
+
+An example python script **cpg.py** is provided for sending **Goal Position, Goal Current** cpg command to the motors.
+```sh
+$ rosrun db_alpha_controllers cpg.py
+```

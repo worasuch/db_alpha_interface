@@ -7,11 +7,22 @@
 
 #include <yaml-cpp/yaml.h>
 
+// Include sensor msgs
 #include <sensor_msgs/JointState.h>
 
+// Include Dynamixel msgs
 #include <dynamixel_workbench_toolbox/dynamixel_workbench.h>
 #include <dynamixel_workbench_msgs/DynamixelStateList.h>
 #include <dynamixel_workbench_msgs/DynamixelCommand.h>
+
+// Include std msgs
+#include "std_msgs/Float32.h"
+#include "std_msgs/Int32.h"
+#include "std_msgs/MultiArrayLayout.h"
+#include "std_msgs/MultiArrayDimension.h"
+#include "std_msgs/Float32MultiArray.h"
+#include "std_msgs/Int32MultiArray.h"
+#include "std_srvs/Trigger.h"
 
 // SYNC_WRITE_HANDLER
 #define SYNC_WRITE_HANDLER_FOR_GOAL_CURRENT 0
@@ -39,12 +50,16 @@ class TorqueController
 		// ROS Topic Publisher
 		ros::Publisher dynamixel_state_list_pub;
 		ros::Publisher joint_states_pub;
+		ros::Publisher joint_IDs_pub;
 	
 		// ROS Topic Subscriber
 		ros::Subscriber goal_joint_state_sub;
 	
 		// ROS Service Server
 		ros::ServiceServer dynamixel_command_server;
+		ros::ServiceServer dynamixel_command_server_reboot;
+		ros::ServiceServer dynamixel_command_server_torqueOff;
+		ros::ServiceServer dynamixel_command_server_torqueOn;
 	
 		// Dynamixel Workbench Parameters
 		DynamixelWorkbench* dxl_wb;
@@ -92,6 +107,9 @@ class TorqueController
 		void onJointStateGoal(const sensor_msgs::JointState& msg);
 	
 		bool dynamixelCommandMsgCallback(dynamixel_workbench_msgs::DynamixelCommand::Request &req, dynamixel_workbench_msgs::DynamixelCommand::Response &res);
+		bool dynamixelRebootCallback(std_srvs::Trigger::Request &req, std_srvs::Trigger::Response &res);
+		bool dynamixelTorqueOffCallback(std_srvs::Trigger::Request &req, std_srvs::Trigger::Response &res);
+		bool dynamixelTorqueOnCallback(std_srvs::Trigger::Request &req, std_srvs::Trigger::Response &res);
 };
 
 
