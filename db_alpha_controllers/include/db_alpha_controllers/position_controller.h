@@ -121,13 +121,13 @@ class PositionController
 		bool dynamixelTorqueOffCallback(std_srvs::Trigger::Request &req, std_srvs::Trigger::Response &res);
 		bool dynamixelTorqueOnCallback(std_srvs::Trigger::Request &req, std_srvs::Trigger::Response &res);
 
-		// ---------- 	Slalom (21 DOFs)	-----------------------------//
+		// ---------- 	Slalom (19 DOFs)	-----------------------------//
 		// Joint configuration vector (format [motor1_ID, motor1_VALUE, motor2_ID, motor2_VALUE, ... , motor21_ID, motor21_VALUE])
 		std::vector<float> joint_configuration = {	0,0,0,0,0,0,0,0, 
 											 	  	0,0,0,0,0,0,0,0, 
 											 	  	0,0,0,0,0,0,0,0,
 											 	  	0,0,0,0,0,0,0,0,
-											 	  	0,0,0,0,0,0,0,0,0,0	};
+											 	  	0,0,0,0,0,0};
 		std::vector<int> joint_identification;
 
 

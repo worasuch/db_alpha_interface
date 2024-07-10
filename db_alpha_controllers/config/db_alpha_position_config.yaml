@@ -197,22 +197,22 @@ id_35:
   Profile_Velocity: 200
   Profile_Acceleration: 50
 
-id_45:
-  ID: 45
-  Return_Delay_Time: 0
-  Operating_Mode: 3
+# id_45:
+#   ID: 45
+#   Return_Delay_Time: 0
+#   Operating_Mode: 3
 #  Position_P_Gain: 1600
 #  Position_I_Gain: 1600
 #  Position_D_Gain: 400
-  Profile_Velocity: 200
-  Profile_Acceleration: 50
+  # Profile_Velocity: 200
+  # Profile_Acceleration: 50
 
-id_55:
-  ID: 55
-  Return_Delay_Time: 0
-  Operating_Mode: 3
+# id_55:
+#   ID: 55
+#   Return_Delay_Time: 0
+#   Operating_Mode: 3
 #  Position_P_Gain: 1600
 #  Position_I_Gain: 1600
 #  Position_D_Gain: 400
-  Profile_Velocity: 200
-  Profile_Acceleration: 50
+  # Profile_Velocity: 200
+  # Profile_Acceleration: 50
