@@ -3,8 +3,8 @@
 # You are supposed to set at least Dynamixel ID
 
 #-------------- LF --------------  
-id_11:    # cpg control
-# id_01:      # gecko hebb
+# id_11:    # cpg control
+id_01:      # gecko hebb
   ID: 11
 #  Return_Delay_Time: 0
   Operating_Mode: 3
@@ -14,8 +14,8 @@ id_11:    # cpg control
   Profile_Velocity: 200
   Profile_Acceleration: 50
   
-id_21:
-# id_02:
+# id_21:
+id_02:
   ID: 21
 #  Return_Delay_Time: 0
   Operating_Mode: 3
@@ -25,8 +25,8 @@ id_21:
   Profile_Velocity: 200
   Profile_Acceleration: 50
 
-id_31:
-# id_03:
+# id_31:
+id_03:
   ID: 31
 #  Return_Delay_Time: 0
   Operating_Mode: 3
@@ -36,8 +36,8 @@ id_31:
   Profile_Velocity: 200
   Profile_Acceleration: 50
 
-id_41:
-# id_04:
+# id_41:
+id_04:
   ID: 41
 #  Return_Delay_Time: 0
   Operating_Mode: 3
@@ -48,8 +48,8 @@ id_41:
   Profile_Acceleration: 50
 
 #-------------- LH --------------  
-id_12:
-# id_05:
+# id_12:
+id_05:
   ID: 12
   Return_Delay_Time: 0
   Operating_Mode: 3
@@ -59,8 +59,8 @@ id_12:
   Profile_Velocity: 200
   Profile_Acceleration: 50
 
-id_22:
-# id_06:
+# id_22:
+id_06:
   ID: 22
   Return_Delay_Time: 0
   Operating_Mode: 3
@@ -70,8 +70,8 @@ id_22:
   Profile_Velocity: 200
   Profile_Acceleration: 50
 
-id_32:
-# id_07:
+# id_32:
+id_07:
   ID: 32
   Return_Delay_Time: 0
   Operating_Mode: 3
@@ -81,8 +81,8 @@ id_32:
   Profile_Velocity: 200
   Profile_Acceleration: 50
 
-id_42:
-# id_08:
+# id_42:
+id_08:
   ID: 42
 #  Return_Delay_Time: 0
   Operating_Mode: 3
@@ -93,8 +93,8 @@ id_42:
   Profile_Acceleration: 50
 
 #-------------- RH -------------- 
-id_13:
-# id_09:
+# id_13:
+id_09:
   ID: 13
   Return_Delay_Time: 0
   Operating_Mode: 3
@@ -104,8 +104,8 @@ id_13:
   Profile_Velocity: 200
   Profile_Acceleration: 50
 
-id_23:
-# id_10:
+# id_23:
+id_10:
   ID: 23
   Return_Delay_Time: 0
   Operating_Mode: 3
@@ -115,8 +115,8 @@ id_23:
   Profile_Velocity: 200
   Profile_Acceleration: 50
 
-id_33:
-# id_11:
+# id_33:
+id_11:
   ID: 33
   Return_Delay_Time: 0
   Operating_Mode: 3
@@ -126,8 +126,8 @@ id_33:
   Profile_Velocity: 200
   Profile_Acceleration: 50
 
-id_43:
-# id_12:
+# id_43:
+id_12:
   ID: 43
 #  Return_Delay_Time: 0
   Operating_Mode: 3
@@ -138,8 +138,8 @@ id_43:
   Profile_Acceleration: 50
 
 #-------------- RF -------------- 
-id_14:
-# id_13:
+# id_14:
+id_13:
   ID: 14
   Return_Delay_Time: 0
   Operating_Mode: 3
@@ -149,8 +149,8 @@ id_14:
   Profile_Velocity: 200
   Profile_Acceleration: 50
 
-id_24:
-# id_14:
+# id_24:
+id_14:
   ID: 24
   Return_Delay_Time: 0
   Operating_Mode: 3
@@ -160,8 +160,8 @@ id_24:
   Profile_Velocity: 200
   Profile_Acceleration: 50
 
-id_34:
-# id_15:
+# id_34:
+id_15:
   ID: 34
   Return_Delay_Time: 0
   Operating_Mode: 3
@@ -171,8 +171,8 @@ id_34:
   Profile_Velocity: 200
   Profile_Acceleration: 50
 
-id_44:
-# id_16:
+# id_44:
+id_16:
   ID: 44
   Return_Delay_Time: 0
   Operating_Mode: 3
@@ -183,8 +183,8 @@ id_44:
   Profile_Acceleration: 50
 
 #-------------- BODY -------------- 
-id_15:
-# id_17:
+# id_15:
+id_17:
   ID: 15
   Return_Delay_Time: 0
   Operating_Mode: 3
@@ -194,8 +194,8 @@ id_15:
   Profile_Velocity: 200
   Profile_Acceleration: 50
 
-id_25:
-# id_18:
+# id_25:
+id_18:
   ID: 25
   Return_Delay_Time: 0
   Operating_Mode: 3
@@ -205,8 +205,8 @@ id_25:
   Profile_Velocity: 200
   Profile_Acceleration: 50
 
-id_35:
-# id_19:
+# id_35:
+id_19:
   ID: 35
   Return_Delay_Time: 0
   Operating_Mode: 3
@@ -216,6 +216,7 @@ id_35:
   Profile_Velocity: 200
   Profile_Acceleration: 50
 
+"""
 id_45:
   ID: 45
   Return_Delay_Time: 0
@@ -235,3 +236,4 @@ id_55:
 #  Position_D_Gain: 400
   Profile_Velocity: 200
   Profile_Acceleration: 50
+"""
